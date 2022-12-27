@@ -1,6 +1,66 @@
+:-use_module(library(lists)).
+
+%start.
+
+start:-
+  repeat,
+  write('board size (N x N): '),
+  read_number(X),
+  X > 0,
+  !,
+  initial_state(X, Board).
+
+%initial_state(+Size, -Board).
+
+initial_state(Size, Board):-
+  create_board(Size, Board),
+  fill_board(Size, Board).
+
+%read_number_acc(+Accumulator, -Number).
+
+read_number_acc(X, X):-peek_code(10), !.
+read_number_acc(Acc, X):-
+  \+peek_code(10),
+  get_code(Code),
+  char_code('0', Zero),
+  Code >= Zero,
+  Code < Zero + 10,
+  Num is Code - Zero,
+  Acc1 is Acc * 10 + Num,
+  read_number_acc(Acc1, X).
+
+%create_board(+Size, -Board).
+
+create_board(Size, Board):-
+  length(Board, Size).
+
+%fill_board(+Size, +Board).
+
+fill_board(Size, Board):-
+  maplist(fill_row(Size), Board).
+
+% fill_row(+Size, -Row).
+
+fill_row(Size, Row) :-
+  length(Row, Size),
+  maplist(=(0), Row).
+
+%read_number(-Number).
+
+read_number(X):-
+  read_number_acc(0, X),
+  clear_buffer.
+
+%clear_buffer.
+
+clear_buffer:-
+  repeat,
+  get_char(C),
+  C = '\n'.
+
 %board functions
 
-%crea_empty_board(+N,?B)
+%create_empty_board(+N,?B)
 create_empty_board(_,B):-
   B is [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]].
 
