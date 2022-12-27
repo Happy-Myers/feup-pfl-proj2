@@ -1,3 +1,43 @@
+%menu functions
+
+%play
+play:-
+  print('1. Play\n'),
+  print('2. Settings\n'),
+  get_char(C),
+  clear_buffer,
+  read_input(C).
+
+read_input('1'):-
+  print('Playing\n'),
+  play_menu.
+read_input('2'):-
+  print('Settings\n'),
+  settings_menu.
+read_input(_):-
+  print('invalid input try again\n'),
+  play.
+
+play_menu:-
+  print('Choose game mode\n'),
+  print('1. PvP\n'),
+  print('2. PvE\n'),
+  print('3. EvE\n'),
+  get_char(C),
+  clear_buffer,
+  read_play_input(C).
+
+read_play_input('1'):-
+  print('PvP\n').
+read_play_input('2'):-
+  print('PvE\n').
+read_play_input('3'):-
+  print('EvE\n').
+read_play_input(_):-
+  print('Invalid input try again\n'),
+  play_menu.
+
+
 %board functions
 
 %crea_empty_board(+N,?B)
@@ -8,10 +48,10 @@ create_empty_board(_,B):-
 :- dynamic board/2.
 %board(?B)
 board([
-  [1,1,0,0],
-  [0,2,0,0],
-  [0,2,1,0],
-  [0,0,1,0]],4).
+  [0,0,0,0],
+  [0,0,0,0],
+  [0,0,0,0],
+  [0,0,0,0]],4).
 
 %get_position(+Row,+Col,?N)
 get_position(Row,Col,N):-
@@ -127,3 +167,11 @@ check_pieces(Row,Col,Row2,Col2,Row3,Col3):-
   Col is Col2 +1,
   Row3 is Row2 +1,
   Col3 is Col2 -1.
+
+
+% clear_buffer.
+% Clears the input buffer.
+clear_buffer:-
+    repeat,
+    get_char(C),
+    C = '\n'.
