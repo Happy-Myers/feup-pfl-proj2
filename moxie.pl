@@ -1,13 +1,19 @@
+%board functions
+
+%crea_empty_board(+N,?B)
 create_empty_board(_,B):-
   B is [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]].
 
+
 :- dynamic board/2.
+%board(?B)
 board([
   [1,1,0,0],
   [0,2,0,0],
   [0,2,1,0],
   [0,0,1,0]],4).
 
+%get_position(+Row,+Col,?N)
 get_position(Row,Col,N):-
   Row >=0,
   Row <4,
@@ -24,6 +30,7 @@ get_position_aux(Row,Col,[_|T],N):-
   Row1 is  Row-1,
   get_position_aux(Row1,Col,T,N).
 
+%print_board
 print_board:-
   board([A,B,C,D],_),
   print_line(A),
@@ -38,11 +45,15 @@ print_line([A,B,C,D]):-
   print(D),
   print('\n').
 
+%is_empty(+Row,+Col)
 is_empty(Row,Col):-
   get_position(Row,Col,N),
   !,
   N is 0.
 
+%move functions
+
+%put_piece(+C,+Row,+Col)
 put_piece(C,Row,Col):-
   is_empty(Row,Col),
   board(B,N),
