@@ -28,7 +28,8 @@ play_menu:-
   read_play_input(C).
 
 read_play_input('1'):-
-  print('PvP\n').
+  print('Playing PvP\n'),
+  pvp.
 read_play_input('2'):-
   print('PvE\n').
 read_play_input('3'):-
@@ -37,21 +38,24 @@ read_play_input(_):-
   print('Invalid input try again\n'),
   play_menu.
 
+%pvp
+pvp:-
+  board_size(N),
+  create_empty_board(N,B),
+  assert(board(B,N)),
+  print_board.
 
 %board functions
 
-%crea_empty_board(+N,?B)
+:- dynamic board_size/1.
+board_size(4).
+
+%create_empty_board(+N,?B)
 create_empty_board(_,B):-
   B is [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]].
 
 
 :- dynamic board/2.
-%board(?B)
-board([
-  [0,0,0,0],
-  [0,0,0,0],
-  [0,0,0,0],
-  [0,0,0,0]],4).
 
 %get_position(+Row,+Col,?N)
 get_position(Row,Col,N):-
