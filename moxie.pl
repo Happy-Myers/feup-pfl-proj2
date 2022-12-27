@@ -4,11 +4,11 @@
 
 start:-
   repeat,
-  write('board size (N x N): '),
-  read_number(X),
+  read_number(X), nl,
   X > 0,
   !,
-  initial_state(X, Board).
+  initial_state(X, Board),
+  write(Board).
 
 %initial_state(+Size, -Board).
 
@@ -29,6 +29,22 @@ read_number_acc(Acc, X):-
   Acc1 is Acc * 10 + Num,
   read_number_acc(Acc1, X).
 
+%read_number(-Number).
+
+read_number(X):-
+  write('board size (N x N): '),
+  read_number_acc(0, X),
+  clear_buffer.
+
+%clear_buffer.
+
+clear_buffer:-
+  repeat,
+  get_char(C),
+  C = '\n'.
+
+%board functions
+
 %create_board(+Size, -Board).
 
 create_board(Size, Board):-
@@ -44,25 +60,6 @@ fill_board(Size, Board):-
 fill_row(Size, Row) :-
   length(Row, Size),
   maplist(=(0), Row).
-
-%read_number(-Number).
-
-read_number(X):-
-  read_number_acc(0, X),
-  clear_buffer.
-
-%clear_buffer.
-
-clear_buffer:-
-  repeat,
-  get_char(C),
-  C = '\n'.
-
-%board functions
-
-%create_empty_board(+N,?B)
-create_empty_board(_,B):-
-  B is [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]].
 
 
 :- dynamic board/2.
