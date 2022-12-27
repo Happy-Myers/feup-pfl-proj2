@@ -207,6 +207,9 @@ put_piece(C,Row,Col):-
   retract(board(B,N)),
   replace(B,Row,Col,C,B2),
   assert(board(B2,N)).
+put_piece(_,_,_):-
+  print('Invalid play\n'),
+  pvp.
 
 replace([[_|T]|Tail],0,0,C,[[C|T]|Tail]).
 replace([[H|T]|Tail],0,Col,C,[[H|T2]|Tail2]):-
@@ -229,6 +232,9 @@ move_piece(C,Row,Col,Row2,Col2):-
   replace(B,Row,Col,0,B2),
   replace(B2,Row2,Col2,C,B3),
   assert(board(B3,N)).
+move_piece(_,_,_,_,_):-
+  print('Invalid play\n'),
+  pvp.
 
 distance(N1,N2):-
   N1 is N2.
@@ -252,7 +258,9 @@ eat_piece(C,Row,Col,Row2,Col2):-
   replace(B2,Row2,Col2,0,B3),
   replace(B3,Row3,Col3,C,B4),
   assert(board(B4,N)).
-  
+eat_piece(_,_,_,_,_):-
+  print('Invalid play\n'),
+  pvp.
 
 check_pieces(Row,Col,Row2,Col2,Row3,Col3):-
   Row is Row2 +1,
@@ -274,7 +282,6 @@ check_pieces(Row,Col,Row2,Col2,Row3,Col3):-
   Col is Col2 +1,
   Row3 is Row2 +1,
   Col3 is Col2 -1.
-
 
 % clear_buffer.
 % Clears the input buffer.
