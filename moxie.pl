@@ -40,22 +40,35 @@ read_play_input(_):-
 
 %pvp
 pvp:-
-  board_size(N),
-  create_empty_board(N,B),
-  assert(board(B,N)),
   print_board.
 
 %board functions
+
+%game_state(-turnNum,-P1State,-P2State,-Board)
+game_state(T,P1,P2,B):-
+  turnNum(T),
+  p1state(P1),
+  p2state(P2),
+  board(B,_).
+
+:- dynamic turnNum/1, p1state/1, p2state/1.
+turnNum(0).
+p1state(0).
+p2state(0).
 
 :- dynamic board_size/1.
 board_size(4).
 
 %create_empty_board(+N,?B)
-create_empty_board(_,B):-
-  B is [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]].
-
+create_empty_board(_,[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]).
 
 :- dynamic board/2.
+
+board([
+  [0,0,0,0],
+  [0,0,0,0],
+  [0,0,0,0],
+  [0,0,0,0]],4).
 
 %get_position(+Row,+Col,?N)
 get_position(Row,Col,N):-
