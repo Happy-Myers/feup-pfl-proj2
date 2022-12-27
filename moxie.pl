@@ -40,7 +40,97 @@ read_play_input(_):-
 
 %pvp
 pvp:-
-  print_board.
+  game_state(T,_,_,_),
+  P is T mod 2,
+  print_board,
+  player_turn(P).
+
+player_turn(1):-
+  print('Player 1 choose your move\n'),
+  print('1. move piece\n'),
+  print('2. place piece\n'),
+  print('3. cpture piece\n'),
+  get_char(C),
+  clear_buffer,
+  choose_play(C,1).
+
+player_turn(0):-
+  print('Player 2 choose your move\n'),
+  print('1. move piece\n'),
+  print('2. place piece\n'),
+  print('3. cpture piece\n'),
+  get_char(C),
+  clear_buffer,
+  choose_play(C,2).
+
+choose_play('1',P):-
+  char_code('0', Zero),
+  print('input row\n'),
+  get_code(Row1Code),
+  clear_buffer,
+  print('input col\n'),
+  get_code(Col1Code),
+  clear_buffer,
+  print('input row2\n'),
+  get_code(Row2Code),
+  clear_buffer,
+  print('input col2\n'),
+  get_code(Col2Code),
+  clear_buffer,
+  Row1 is Row1Code - Zero,
+  Col1 is Col1Code - Zero,
+  Row2 is Row2Code - Zero,
+  Col2 is Col2Code - Zero,
+  move_piece(P,Row1,Col1,Row2,Col2),
+  retract(turnNum(N)),
+  N1 is N+1,
+  assert(turnNum(N1)),
+  pvp.
+
+choose_play('2',P):-
+  char_code('0', Zero),
+  print('input row\n'),
+  get_code(Row1Code),
+  clear_buffer,
+  print('input col\n'),
+  get_code(Col1Code),
+  clear_buffer,
+  Row1 is Row1Code - Zero,
+  Col1 is Col1Code - Zero,
+  put_piece(P,Row1,Col1),
+  retract(turnNum(N)),
+  N1 is N+1,
+  assert(turnNum(N1)),
+  pvp.
+
+choose_play('3',P):-
+  char_code('0', Zero),
+  print('input row\n'),
+  get_code(Row1Code),
+  clear_buffer,
+  print('input col\n'),
+  get_code(Col1Code),
+  clear_buffer,
+  print('input row2\n'),
+  get_code(Row2Code),
+  clear_buffer,
+  print('input col2\n'),
+  get_code(Col2Code),
+  clear_buffer,
+  Row1 is Row1Code - Zero,
+  Col1 is Col1Code - Zero,
+  Row2 is Row2Code - Zero,
+  Col2 is Col2Code - Zero,
+  eat_piece(P,Row1,Col1,Row2,Col2),
+  retract(turnNum(N)),
+  N1 is N+1,
+  assert(turnNum(N1)),
+  pvp.
+
+choose_play(_,_):-
+  print('invalid input\n'),
+  pvp.
+
 
 %board functions
 
@@ -52,7 +142,7 @@ game_state(T,P1,P2,B):-
   board(B,_).
 
 :- dynamic turnNum/1, p1state/1, p2state/1.
-turnNum(0).
+turnNum(1).
 p1state(0).
 p2state(0).
 
