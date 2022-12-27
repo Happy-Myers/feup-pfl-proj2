@@ -1,65 +1,40 @@
-:-use_module(library(lists)).
+:- consult('io.pl').
+:- consult('logic.pl').
+
 
 %start.
 
 start:-
+  welcome_message,
+  main_menu.
+
+
+%main_menu.
+
+main_menu :-
   repeat,
-  read_number(X), nl,
-  X > 0,
-  !,
-  initial_state(X, Board),
-  write(Board).
+  format('What would you like to do?~n1 - Play.~n2 - Change gamemode.~n3 - Change board size.~n4 - leave.~n', []),
+  read_line(Codes),
+  catch(number_codes(Option, Codes),_, fail),
+  Option > 0,
+  Option < 5,
+  (
+    Option =:= 4;
+    main_menu(Option),
+    fail
+  ).
 
-%initial_state(+Size, -Board).
+main_menu(1):- play.
+main_menu(2):- get_gamemode.
+main_menu(3):- get_boardsize.
 
-initial_state(Size, Board):-
-  create_board(Size, Board),
-  fill_board(Size, Board).
-
-%read_number_acc(+Accumulator, -Number).
-
-read_number_acc(X, X):-peek_code(10), !.
-read_number_acc(Acc, X):-
-  \+peek_code(10),
-  get_code(Code),
-  char_code('0', Zero),
-  Code >= Zero,
-  Code < Zero + 10,
-  Num is Code - Zero,
-  Acc1 is Acc * 10 + Num,
-  read_number_acc(Acc1, X).
-
-%read_number(-Number).
-
-read_number(X):-
-  write('board size (N x N): '),
-  read_number_acc(0, X),
-  clear_buffer.
-
-%clear_buffer.
-
-clear_buffer:-
-  repeat,
-  get_char(C),
-  C = '\n'.
+%play.
+play:-
+  size(Size),
+  initial_state(Size, Gamestate),
+  display_game(Gamestate).
 
 %board functions
-
-%create_board(+Size, -Board).
-
-create_board(Size, Board):-
-  length(Board, Size).
-
-%fill_board(+Size, +Board).
-
-fill_board(Size, Board):-
-  maplist(fill_row(Size), Board).
-
-% fill_row(+Size, -Row).
-
-fill_row(Size, Row) :-
-  length(Row, Size),
-  maplist(=(0), Row).
 
 
 :- dynamic board/2.
