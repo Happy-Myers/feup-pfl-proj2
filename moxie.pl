@@ -68,3 +68,12 @@ replace([[H|T]|Tail],0,Col,C,[[H|T2]|Tail2]):-
 replace([H|T],Row,Col,C,[H|T2]):-
   Row1 is Row -1,
   replace(T,Row1,Col,C,T2).
+
+%move_piece(+C,+Row,+Col,+Row2,+Col2)
+move_piece(C,Row,Col,Row2,Col2):-
+  is_empty(Row2,Col2),
+  board(B,N),
+  retract(board(B,N)),
+  replace(B,Row,Col,0,B2),
+  replace(B2,Row2,Col2,C,B3),
+  assert(board(B3,N)).
