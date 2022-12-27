@@ -71,9 +71,21 @@ replace([H|T],Row,Col,C,[H|T2]):-
 
 %move_piece(+C,+Row,+Col,+Row2,+Col2)
 move_piece(C,Row,Col,Row2,Col2):-
+  distance(Row,Row2),
+  distance(Col,Col2),
   is_empty(Row2,Col2),
+  get_position(Row,Col,Num),
+  !,
+  Num is C,
   board(B,N),
   retract(board(B,N)),
   replace(B,Row,Col,0,B2),
   replace(B2,Row2,Col2,C,B3),
   assert(board(B3,N)).
+
+distance(N1,N2):-
+  N1 is N2.
+distance(N1,N2):-
+  N1 is N2 -1.
+distance(N1,N2):-
+  N1 is N2 +1.
