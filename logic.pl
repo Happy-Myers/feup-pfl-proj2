@@ -365,20 +365,21 @@ check_eat(P):-
 check_eat_aux(P,[[]|Tail]):-
   check_eat_aux(P,Tail).
 check_eat_aux(P,[[P|T]|[H1,H2|_]]):-
-  length(T,Len),
-  Len1 is Len-1,
+  length(T,Len1),
+  Len1 > -1,
   length([H|T1],Len1),
   append(_,[H|T1],H1),
   \+ H is P,
   \+ H is 0,
   Len2 is Len1-1,
+  Len2 > -1,
   length([H3|T2],Len2),
   append(_,[H3|T2],H2),
   H3 is 0.
 check_eat_aux(P,[[P|T]|[H1,H2|_]]):-
   length(T,Len),
   Len1 is Len +2,
-  length([H|T1],Len),
+  length([H|T1],Len1),
   append(_,[H|T1],H1),
   \+ H is P,
   \+ H is 0,
@@ -387,19 +388,21 @@ check_eat_aux(P,[[P|T]|[H1,H2|_]]):-
   append(_,[H3|T2],H2),
   H3 is 0.
 check_eat_aux(P,[[0|T]|[H1,H2|_]]):-
-  length(T,Len),
-  length([H|T1],Len),
+  length(T,Len1),
+  Len1 > -1,
+  length([H|T1],Len1),
   append(_,[H|T1],H1),
   \+ H is P,
   \+ H is 0,
-  Len1 is Len-1,
-  length([H3|T2],Len1),
+  Len2 is Len1-1,
+  Len2 > -1,
+  length([H3|T2],Len2),
   append(_,[H3|T2],H2),
   H3 is P.
 check_eat_aux(P,[[0|T]|[H1,H2|_]]):-
   length(T,Len),
   Len1 is Len +2,
-  length([H|T1],Len),
+  length([H|T1],Len1),
   append(_,[H|T1],H1),
   \+ H is P,
   \+ H is 0,
