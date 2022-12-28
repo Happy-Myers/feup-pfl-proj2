@@ -33,18 +33,21 @@ fill_row(Size, Row) :-
 pvp:-
   game_state(_,1,_,_),
   clear,
-  format('Player 1 wins~n',[]),
+  display_game,
+  format('Player 1 wins by points~n',[]),
   main_menu.
 
 pvp:-
   game_state(_,_,1,_),
   clear,
-  format('Player 2 wins~n',[]),
+  display_game,
+  format('Player 2 wins by points~n',[]),
   main_menu.
 
 pvp:-
   game_state(_,_,_,B),
   win_by_line(B),
+  display_game,
   main_menu.
 pvp:-
   clear,
@@ -185,11 +188,17 @@ is_empty(Row,Col):-
 %win_by_line(+Board)
 win_by_line(B):-
   win_by_line_aux(B,0,P,0),
-  format('Player ~d wins~n',[P]).
+  format('Player ~d wins by horizontal line~n',[P]).
 win_by_line(B):-
   transpose(B,B1),
   win_by_line_aux(B1,0,P,0),
-  format('Player ~d wins~n',[P]).
+  format('Player ~d wins by line vertical~n',[P]).
+win_by_line(B):-
+  win_by_line_aux2(B,0,P,0),
+  format('Player ~d wins by diagonar 1 line~n',[P]).
+win_by_line(B):-
+  win_by_line_aux3(B,0,P,0),
+  format('Player ~d wins by dioganla 2 line~n',[P]).
 
 win_by_line_aux(_,3,P,P).
 win_by_line_aux([[]|Tail],_,P,_):-
@@ -211,26 +220,42 @@ win_by_line_aux([[1|T]|Tail],_,P,2):-
 win_by_line_aux([[2|T]|Tail],_,P,1):-
   win_by_line_aux([T|Tail],0,P,2).
 
+win_by_line_aux2(_,3,P,P).
+win_by_line_aux2([[0|T]|Tail],_,P,_):-
+  win_by_line_aux2([T|Tail],0,P,0).
+win_by_line_aux2([[H|T]|[Head|Tail]],Aux,P,H):-
+  \+H is 0,
+  Aux1 is Aux+1,
+  length(T,Len),
+  length(List,Len),
+  append(_,List,Head),
+  Aux1 is Aux+1,
+  win_by_line_aux2([List|Tail],Aux1,P,H).
+win_by_line_aux2([[H|T]|[Head|Tail]],_,P,_):-
+  length(T,Len),
+  length(List,Len),
+  append(_,List,Head),
+  win_by_line_aux2([List|Tail],1,P,H).
 
-/*
-%rows
-win_by_line([H|T]):-
-  check_row(H,P),
-  format('Player ~d wins~n',[P]).
-%collumns
-win_by_line([H|T]):-
-  check_col([H|T],P),
-  format('Player ~d wins~n',[P]).
+win_by_line_aux3(_,3,P,P).
+win_by_line_aux3([[0|T]|Tail],_,P,_):-
+  win_by_line_aux3([T|Tail],0,P,0).
+win_by_line_aux3([[H|T]|[Head|Tail]],Aux,P,H):-
+  \+H is 0,
+  Aux1 is Aux+1,
+  length(T,Len),
+  Len2 is Len+2,
+  length(List,Len2),
+  append(_,List,Head),
+  Aux1 is Aux+1,
+  win_by_line_aux3([List|Tail],Aux1,P,H).
+win_by_line_aux3([[H|T]|[Head|Tail]],_,P,_):-
+  length(T,Len),
+  Len2 is Len+2,
+  length(List,Len2),
+  append(_,List,Head),
+  win_by_line_aux3([List|Tail],1,P,H).
 
-check_row([],1).
-check_row([1|T],1):-
-  check_row(T,1).
-check_row([],2).
-check_row([2|T],2):-
-  check_row(T,2).
-
-check_col()
-*/
 %move functions
 
 %put_piece(+C,+Row,+Col)
