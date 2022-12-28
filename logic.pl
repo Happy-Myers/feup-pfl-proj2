@@ -26,89 +26,90 @@ fill_row(Size, Row) :-
 %pvp
 pvp:-
   clear,
-  print('pvp\n'),
+  format('pvp~n', []),
   game_state(T,_,_,_),
   P is T mod 2,
   display_game,
   player_turn(P).
 
 player_turn(1):-
-  print('Player 1 choose your move\n1. move piece\n2. place piece\n3. cpture piece\n'),
-  get_char(C),
-  clear_buffer,
+  format('Player 1 choose your move~n1 - move piece~n2 - place piece~n3 - capture piece~n', []),
+  read_line(Code),
+  catch(number_codes(C, Code), _, fail),
   choose_play(C,1).
 player_turn(0):-
-  print('Player 2 choose your move\n1. move piece\n2. place piece\n3. cpture piece\n'),
-  get_char(C),
-  clear_buffer,
+  format('Player 2 choose your move~n1 - move piece~n2 - place piece~n3 - capture piece~n', []),
+  read_line(Code),
+  catch(number_codes(C, Code), _, fail),
   choose_play(C,2).
 
-choose_play('1',P):-
-  char_code('0', Zero),
-  print('input row\n'),
-  get_code(Row1Code),
-  clear_buffer,
-  print('input col\n'),
-  get_code(Col1Code),
-  clear_buffer,
-  print('input row2\n'),
-  get_code(Row2Code),
-  clear_buffer,
-  print('input col2\n'),
-  get_code(Col2Code),
-  clear_buffer,
-  Row1 is Row1Code - Zero,
-  Col1 is Col1Code - Zero,
-  Row2 is Row2Code - Zero,
-  Col2 is Col2Code - Zero,
-  move_piece(P,Row1,Col1,Row2,Col2),
+player_turn(N):-
+  format('invalid input~n', []),
+  player_turn(N).
+
+choose_play(1,P):-
+  format('input row~n', []),
+  read_line(Row1Code),
+  catch(number_codes(Row1, Row1Code), _, fail),
+  format('input col~n', []),
+  read_line(Col1Code),
+  catch(number_codes(Col1, Col1Code), _, fail),
+  format('input row2~n', []),
+  read_line(Row2Code),
+  catch(number_codes(Row2, Row2Code), _, fail),
+  format('input col2~n', []),
+  read_line(Col2Code),
+  catch(number_codes(Col2, Col2Code), _, fail),
+  NCol1 is Col1 - 1,
+  NCol2 is Col2 - 1,
+  NRow1 is Row1 - 1,
+  NRow2 is Row2 - 1,
+  move_piece(P,NRow1,NCol1,NRow2,NCol2),
   retract(turnNum(N)),
   N1 is N+1,
   assert(turnNum(N1)),
   pvp.
 
-choose_play('2',P):-
-  char_code('0', Zero),
-  print('input row\n'),
-  get_code(Row1Code),
-  clear_buffer,
-  print('input col\n'),
-  get_code(Col1Code),
-  clear_buffer,
-  Row1 is Row1Code - Zero,
-  Col1 is Col1Code - Zero,
-  put_piece(P,Row1,Col1),
+choose_play(2,P):-
+  format('input row~n', []),
+  read_line(Row1Code),
+  catch(number_codes(Row1, Row1Code), _, fail),
+  format('input col~n', []),
+  read_line(Col1Code),
+  catch(number_codes(Col1, Col1Code), _, fail),
+  NCol1 is Col1 - 1,
+  NRow1 is Row1 - 1,
+  put_piece(P,NRow1,NCol1),
   retract(turnNum(N)),
   N1 is N+1,
   assert(turnNum(N1)),
   pvp.
 
-choose_play('3',P):-
-  char_code('0', Zero),
-  print('input row\n'),
-  get_code(Row1Code),
-  clear_buffer,
-  print('input col\n'),
-  get_code(Col1Code),
-  clear_buffer,
-  print('input row2\n'),
-  get_code(Row2Code),
-  clear_buffer,
-  print('input col2\n'),
-  get_code(Col2Code),
-  clear_buffer,
-  Row1 is Row1Code - Zero,
-  Col1 is Col1Code - Zero,
-  Row2 is Row2Code - Zero,
-  Col2 is Col2Code - Zero,
-  eat_piece(P,Row1,Col1,Row2,Col2),
+choose_play(3,P):-
+  format('input row~n', []),
+  read_line(Row1Code),
+  catch(number_codes(Row1, Row1Code), _, fail),
+  format('input col~n', []),
+  read_line(Col1Code),
+  catch(number_codes(Col1, Col1Code), _, fail),
+  format('input row2~n', []),
+  read_line(Row2Code),
+  catch(number_codes(Row2, Row2Code), _, fail),
+  format('input col2~n', []),
+  read_line(Col2Code),
+  catch(number_codes(Col2, Col2Code), _, fail),
+  NCol1 is Col1 - 1,
+  NCol2 is Col2 - 1,
+  NRow1 is Row1 - 1,
+  NRow2 is Row2 - 1,
+  eat_piece(P,NRow1,NCol1,NRow2,NCol2),
   retract(turnNum(N)),
   N1 is N+1,
   assert(turnNum(N1)),
   pvp.
 
 choose_play(_,_):-
-  print('invalid input\n'),
+  format('invalid input~n', []),
   pvp.
 
 
@@ -232,10 +233,3 @@ check_pieces(Row,Col,Row2,Col2,Row3,Col3):-
   Col is Col2 +1,
   Row3 is Row2 +1,
   Col3 is Col2 -1.
-
-% clear_buffer.
-% Clears the input buffer.
-clear_buffer:-
-    repeat,
-    get_char(C),
-    C = '\n'.
