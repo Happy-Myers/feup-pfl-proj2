@@ -5,6 +5,7 @@
 %start.
 
 start:-
+  clear,
   welcome_message,
   main_menu.
 
@@ -20,6 +21,7 @@ main_menu :-
   Option < 5,
   (
     Option =:= 4;
+    clear,
     main_menu(Option),
     fail
   ).

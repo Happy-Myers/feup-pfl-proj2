@@ -1,4 +1,5 @@
 :-use_module(library(lists)).
+:-consult('io.pl').
 
 %initial_state(+Size, ?Gamestate).
 
@@ -24,11 +25,11 @@ fill_row(Size, Row) :-
 
 %pvp
 pvp:-
+  clear,
   print('pvp\n'),
   game_state(T,_,_,_),
   P is T mod 2,
-  board(B),
-  display_game(B-1),
+  display_game,
   player_turn(P).
 
 player_turn(1):-
@@ -126,14 +127,6 @@ p1state(0).
 p2state(0).
 
 %board functions
-
-:- dynamic board/1.
-
-board([
-  [0,0,0,0],
-  [0,0,0,0],
-  [0,0,0,0],
-  [0,0,0,0]]).
 
 %get_position(+Row,+Col,?N)
 get_position(Row,Col,N):-
