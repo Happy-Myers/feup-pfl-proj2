@@ -42,7 +42,10 @@ pvp:-
   format('Player 2 wins~n',[]),
   main_menu.
 
-
+pvp:-
+  game_state(_,_,_,B),
+  win_by_line(B),
+  main_menu.
 pvp:-
   clear,
   game_state(T,Points1,Points2,_),
@@ -139,6 +142,7 @@ add_point(2):-
   retract(p2state(Points)),
   Points1 is Points +1,
   assert(p2state(Points1)).
+
 %board functions
 
 %game_state(-turnNum,-P1State,-P2State,-Board)
@@ -178,6 +182,51 @@ is_empty(Row,Col):-
   !,
   N is 0.
 
+%win_by_line(+Board)
+win_by_line(B):-
+  win_by_line_aux(B,0,P,0),
+  format('Player ~d wins~n',[P]).
+
+win_by_line_aux(_,3,P,P).
+win_by_line_aux([[]|Tail],_,P,_):-
+  win_by_line_aux(Tail,0,P,0).
+win_by_line_aux([[0|T]|Tail],_,P,_):-
+  win_by_line_aux([T|Tail],0,P,0).
+win_by_line_aux([[1|T]|Tail],_,P,0):-
+  win_by_line_aux([T|Tail],1,P,1).
+win_by_line_aux([[2|T]|Tail],_,P,0):-
+  win_by_line_aux([T|Tail],1,P,2).
+win_by_line_aux([[1|T]|Tail],Aux,P,1):-
+  Aux1 is Aux+1,
+  win_by_line_aux([T|Tail],Aux1,P,1).
+win_by_line_aux([[2|T]|Tail],Aux,P,2):-
+  Aux1 is Aux+1,
+  win_by_line_aux([T|Tail],Aux1,P,2).
+win_by_line_aux([[1|T]|Tail],_,P,2):-
+  win_by_line_aux([T|Tail],0,P,1).
+win_by_line_aux([[2|T]|Tail],_,P,1):-
+  win_by_line_aux([T|Tail],0,P,2).
+
+
+/*
+%rows
+win_by_line([H|T]):-
+  check_row(H,P),
+  format('Player ~d wins~n',[P]).
+%collumns
+win_by_line([H|T]):-
+  check_col([H|T],P),
+  format('Player ~d wins~n',[P]).
+
+check_row([],1).
+check_row([1|T],1):-
+  check_row(T,1).
+check_row([],2).
+check_row([2|T],2):-
+  check_row(T,2).
+
+check_col()
+*/
 %move functions
 
 %put_piece(+C,+Row,+Col)
