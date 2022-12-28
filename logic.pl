@@ -32,6 +32,7 @@ pvp:-
   display_game,
   player_turn(P).
 
+%player_turn(+Player)
 player_turn(1):-
   format('Player 1 choose your move~n1 - move piece~n2 - place piece~n3 - capture piece~n', []),
   read_line(Code),
@@ -42,11 +43,11 @@ player_turn(0):-
   read_line(Code),
   catch(number_codes(C, Code), _, fail),
   choose_play(C,2).
-
 player_turn(N):-
   format('invalid input~n', []),
   player_turn(N).
 
+%choose_play(+Play,+Player)
 choose_play(1,P):-
   format('input row~n', []),
   read_line(Row1Code),
@@ -69,7 +70,6 @@ choose_play(1,P):-
   N1 is N+1,
   assert(turnNum(N1)),
   pvp.
-
 choose_play(2,P):-
   format('input row~n', []),
   read_line(Row1Code),
@@ -84,7 +84,6 @@ choose_play(2,P):-
   N1 is N+1,
   assert(turnNum(N1)),
   pvp.
-
 choose_play(3,P):-
   format('input row~n', []),
   read_line(Row1Code),
@@ -107,7 +106,6 @@ choose_play(3,P):-
   N1 is N+1,
   assert(turnNum(N1)),
   pvp.
-
 choose_play(_,_):-
   format('invalid input~n', []),
   pvp.
@@ -164,6 +162,7 @@ put_piece(C,Row,Col):-
 /*put_piece(_,_,_):-
   print('Invalid play\n').*/
 
+%replace(Board,Row,Col,)
 replace([[_|T]|Tail],0,0,C,[[C|T]|Tail]).
 replace([[H|T]|Tail],0,Col,C,[[H|T2]|Tail2]):-
   Col1 is Col -1,
@@ -188,6 +187,7 @@ move_piece(C,Row,Col,Row2,Col2):-
 /*move_piece(_,_,_,_,_):-
   print('Invalid play\n').*/
 
+%distance(+N1,+N2)
 distance(N1,N2):-
   N1 is N2.
 distance(N1,N2):-
@@ -204,6 +204,9 @@ eat_piece(C,Row,Col,Row2,Col2):-
   get_position(Row2,Col2,Num2),
   !,
   \+ Num1 is Num2,
+  get_position(Row2,Col2,Num3),
+  !,
+  Num3 is 0,
   board(B),
   retract(board(B)),
   replace(B,Row,Col,0,B2),
