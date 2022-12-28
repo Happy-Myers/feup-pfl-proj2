@@ -186,6 +186,10 @@ is_empty(Row,Col):-
 win_by_line(B):-
   win_by_line_aux(B,0,P,0),
   format('Player ~d wins~n',[P]).
+win_by_line(B):-
+  transpose(B,B1),
+  win_by_line_aux(B1,0,P,0),
+  format('Player ~d wins~n',[P]).
 
 win_by_line_aux(_,3,P,P).
 win_by_line_aux([[]|Tail],_,P,_):-
