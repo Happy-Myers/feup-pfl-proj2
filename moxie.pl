@@ -31,6 +31,5 @@ main_menu(3):- get_boardsize.
 %play.
 play:-
   size(Size),
-  initial_state(Size, Gamestate),
-  display_game(Gamestate),
+  initial_state(Size, _),
   pvp.

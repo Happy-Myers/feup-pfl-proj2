@@ -24,6 +24,7 @@ fill_row(Size, Row) :-
 
 %pvp
 pvp:-
+  print('pvp\n'),
   game_state(T,_,_,_),
   P is T mod 2,
   board(B),
@@ -35,7 +36,6 @@ player_turn(1):-
   get_char(C),
   clear_buffer,
   choose_play(C,1).
-
 player_turn(0):-
   print('Player 2 choose your move\n1. move piece\n2. place piece\n3. cpture piece\n'),
   get_char(C),
@@ -167,9 +167,8 @@ put_piece(C,Row,Col):-
   retract(board(B)),
   replace(B,Row,Col,C,B2),
   assert(board(B2)).
-put_piece(_,_,_):-
-  print('Invalid play\n'),
-  pvp.
+/*put_piece(_,_,_):-
+  print('Invalid play\n').*/
 
 replace([[_|T]|Tail],0,0,C,[[C|T]|Tail]).
 replace([[H|T]|Tail],0,Col,C,[[H|T2]|Tail2]):-
@@ -192,9 +191,8 @@ move_piece(C,Row,Col,Row2,Col2):-
   replace(B,Row,Col,0,B2),
   replace(B2,Row2,Col2,C,B3),
   assert(board(B3)).
-move_piece(_,_,_,_,_):-
-  print('Invalid play\n'),
-  pvp.
+/*move_piece(_,_,_,_,_):-
+  print('Invalid play\n').*/
 
 distance(N1,N2):-
   N1 is N2.
@@ -218,9 +216,8 @@ eat_piece(C,Row,Col,Row2,Col2):-
   replace(B2,Row2,Col2,0,B3),
   replace(B3,Row3,Col3,C,B4),
   assert(board(B4)).
-eat_piece(_,_,_,_,_):-
-  print('Invalid play\n'),
-  pvp.
+/*eat_piece(_,_,_,_,_):-
+  print('Invalid play\n').*/
 
 check_pieces(Row,Col,Row2,Col2,Row3,Col3):-
   Row is Row2 +1,
