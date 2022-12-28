@@ -31,14 +31,14 @@ fill_row(Size, Row) :-
 
 %pvp
 pvp:-
-  game_state(_,1,_,_),
+  game_state(_,6,_,_),
   clear,
   display_game,
   format('Player 1 wins by points~n',[]),
   main_menu.
 
 pvp:-
-  game_state(_,_,1,_),
+  game_state(_,_,6,_),
   clear,
   display_game,
   format('Player 2 wins by points~n',[]),
@@ -59,14 +59,28 @@ pvp:-
 
 %player_turn(+Player)
 player_turn(1):-
-  format('Player 1 choose your move~n1 - move piece~n2 - place piece~n3 - capture piece~n', []),
+  check_eat(1),
+  format('Player 1 choose your move~n1 - capture piece~n', []),
+  read_line(Code),
+  catch(number_codes(1, Code), _, fail),
+  choose_play(3,1).
+player_turn(0):-
+  check_eat(2),
+  format('Player 2 choose your move~n1 - capture piece~n', []),
+  read_line(Code),
+  catch(number_codes(1, Code), _, fail),
+  choose_play(3,2).
+player_turn(1):-
+  format('Player 1 choose your move~n1 - move piece~n2 - place piece~n', []),
   read_line(Code),
   catch(number_codes(C, Code), _, fail),
+  C>0, C<3,
   choose_play(C,1).
 player_turn(0):-
-  format('Player 2 choose your move~n1 - move piece~n2 - place piece~n3 - capture piece~n', []),
+  format('Player 2 choose your move~n1 - move piece~n2 - place piece~n', []),
   read_line(Code),
   catch(number_codes(C, Code), _, fail),
+  C>0, C<3,
   choose_play(C,2).
 player_turn(N):-
   format('invalid input~n', []),
@@ -342,3 +356,57 @@ check_pieces(Row,Col,Row2,Col2,Row3,Col3):-
   Col is Col2 +1,
   Row3 is Row2 +1,
   Col3 is Col2 -1.
+
+%check_eat(+Player)
+check_eat(P):-
+  board(B),
+  check_eat_aux(P,B).
+
+check_eat_aux(P,[[]|Tail]):-
+  check_eat_aux(P,Tail).
+check_eat_aux(P,[[P|T]|[H1,H2|_]]):-
+  length(T,Len),
+  Len1 is Len-1,
+  length([H|T1],Len1),
+  append(_,[H|T1],H1),
+  \+ H is P,
+  \+ H is 0,
+  Len2 is Len1-1,
+  length([H3|T2],Len2),
+  append(_,[H3|T2],H2),
+  H3 is 0.
+check_eat_aux(P,[[P|T]|[H1,H2|_]]):-
+  length(T,Len),
+  Len1 is Len +2,
+  length([H|T1],Len),
+  append(_,[H|T1],H1),
+  \+ H is P,
+  \+ H is 0,
+  Len2 is Len1+1,
+  length([H3|T2],Len2),
+  append(_,[H3|T2],H2),
+  H3 is 0.
+check_eat_aux(P,[[0|T]|[H1,H2|_]]):-
+  length(T,Len),
+  length([H|T1],Len),
+  append(_,[H|T1],H1),
+  \+ H is P,
+  \+ H is 0,
+  Len1 is Len-1,
+  length([H3|T2],Len1),
+  append(_,[H3|T2],H2),
+  H3 is P.
+check_eat_aux(P,[[0|T]|[H1,H2|_]]):-
+  length(T,Len),
+  Len1 is Len +2,
+  length([H|T1],Len),
+  append(_,[H|T1],H1),
+  \+ H is P,
+  \+ H is 0,
+  Len2 is Len1+1,
+  length([H3|T2],Len2),
+  append(_,[H3|T2],H2),
+  H3 is P.
+check_eat_aux(P,[[_|T]|Tail]):-
+  check_eat_aux(P,[T|Tail]).
+  
