@@ -8,7 +8,13 @@ initial_state(Size, Board-1):-
     create_board(Size, Board),
     fill_board(Size, Board),
     retract(board(_)),
-    assert(board(Board)).
+    assert(board(Board)),
+    retract(p1state(_)),
+    retract(p2state(_)),
+    retract(turnNum(_)),
+    assert(p1state(0)),
+    assert(p2state(0)),
+    assert(turnNum(1)).
 
 %create_board(+Size, -Board).
 create_board(Size, Board):-
@@ -25,10 +31,23 @@ fill_row(Size, Row) :-
 
 %pvp
 pvp:-
+  game_state(_,1,_,_),
   clear,
-  format('pvp~n', []),
-  game_state(T,_,_,_),
+  format('Player 1 wins~n',[]),
+  main_menu.
+
+pvp:-
+  game_state(_,_,1,_),
+  clear,
+  format('Player 2 wins~n',[]),
+  main_menu.
+
+
+pvp:-
+  clear,
+  game_state(T,Points1,Points2,_),
   P is T mod 2,
+  format('Player1 points: ~d~nPlayer2 points: ~d~n', [Points1, Points2]),
   display_game,
   player_turn(P).
 
@@ -105,12 +124,21 @@ choose_play(3,P):-
   retract(turnNum(N)),
   N1 is N+1,
   assert(turnNum(N1)),
+  add_point(P),
   pvp.
 choose_play(_,_):-
   format('invalid input~n', []),
   pvp.
 
-
+%add_point(Player)
+add_point(1):-
+  retract(p1state(Points)),
+  Points1 is Points +1,
+  assert(p1state(Points1)).
+add_point(2):-
+  retract(p2state(Points)),
+  Points1 is Points +1,
+  assert(p2state(Points1)).
 %board functions
 
 %game_state(-turnNum,-P1State,-P2State,-Board)
@@ -204,7 +232,7 @@ eat_piece(C,Row,Col,Row2,Col2):-
   get_position(Row2,Col2,Num2),
   !,
   \+ Num1 is Num2,
-  get_position(Row2,Col2,Num3),
+  get_position(Row3,Col3,Num3),
   !,
   Num3 is 0,
   board(B),
