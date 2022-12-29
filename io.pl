@@ -7,10 +7,19 @@ encoding(utf8).
 welcome_message:-
     format('Welcome to Moxie!~nLet\'s play!~n', []).
 
-:- dynamic gamemode/1, size/1.
+:- dynamic gamemode/1, size/1, board/1.
 
 gamemode(h/h).    %default gamemode is human vs human
 size(4).          %default size is 4x4
+board([
+  [0,0,0,0],
+  [0,0,0,0],
+  [0,0,0,0],
+  [0,0,0,0]]).     % default board.
+
+%clear.
+clear :- 
+    write('\e[2J').
 
 %valid_gamemode(+Gamemode)
 
@@ -79,8 +88,9 @@ display_char(2, 'O').
 
 %display_game(+Gamestate).
 
-display_game(Board-_):-
+display_game:-
     size(Size),
+    board(Board),
     display_edge_line(Size, first),
     display_lines(Board),
     display_edge_line(Size, last).
