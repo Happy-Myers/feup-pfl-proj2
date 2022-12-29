@@ -34,14 +34,14 @@ pvp:-
   game_state(_,6,_,_),
   clear,
   display_game,
-  format('Player 1 wins by points~n',[]),
+  format('Player 1 wins by captures~n',[]),
   main_menu.
 
 pvp:-
   game_state(_,_,6,_),
   clear,
   display_game,
-  format('Player 2 wins by points~n',[]),
+  format('Player 2 wins by captures~n',[]),
   main_menu.
 
 pvp:-
@@ -71,20 +71,44 @@ player_turn(0):-
   catch(number_codes(1, Code), _, fail),
   choose_play(3,2).
 player_turn(1):-
+  board(B),
+  check_board(1, B),
   format('Player 1 choose your move~n1 - move piece~n2 - place piece~n', []),
   read_line(Code),
   catch(number_codes(C, Code), _, fail),
   C>0, C<3,
   choose_play(C,1).
 player_turn(0):-
+  board(B),
+  check_board(2, B),
   format('Player 2 choose your move~n1 - move piece~n2 - place piece~n', []),
   read_line(Code),
   catch(number_codes(C, Code), _, fail),
   C>0, C<3,
   choose_play(C,2).
+player_turn(1):-
+  format('Player 1 choose your move~n1 - place piece~n', []),
+  read_line(Code),
+  catch(number_codes(1, Code), _, fail),
+  choose_play(2,1).
+player_turn(0):-
+  format('Player 2 choose your move~n1 - place piece~n', []),
+  read_line(Code),
+  catch(number_codes(1, Code), _, fail),
+  choose_play(2,2).
 player_turn(N):-
   format('invalid input~n', []),
   player_turn(N).
+
+%check_board(+Player, +Board).
+check_board(P, [[H|_]|_]):-
+  P =:= H.
+check_board(P, [[H|T]|Tail]):-
+  H \= P,
+  check_board(P, [T|Tail]).
+check_board(P, [[]|Tail]):-
+  check_board(P, Tail).
+
 
 %choose_play(+Play,+Player)
 choose_play(1,P):-
