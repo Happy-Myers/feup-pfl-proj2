@@ -50,7 +50,7 @@ pvp:-
   display_game,
   main_menu.
 pvp:-
-  clear,
+  %clear,
   game_state(T,Points1,Points2,_),
   P is T mod 2,
   format('Player1 points: ~d~nPlayer2 points: ~d~n', [Points1, Points2]),
@@ -211,7 +211,7 @@ win_by_line(B):-
   win_by_line_aux2(B,0,P,0),
   format('Player ~d wins by diagonar 1 line~n',[P]).
 win_by_line(B):-
-  win_by_line_aux3(B,0,P,0),
+  win_by_line_aux3(B,P),
   format('Player ~d wins by dioganla 2 line~n',[P]).
 
 win_by_line_aux(_,3,P,P).
@@ -251,24 +251,32 @@ win_by_line_aux2([[H|T]|[Head|Tail]],_,P,_):-
   append(_,List,Head),
   win_by_line_aux2([List|Tail],1,P,H).
 
-win_by_line_aux3(_,3,P,P).
-win_by_line_aux3([[0|T]|Tail],_,P,_):-
-  win_by_line_aux3([T|Tail],0,P,0).
-win_by_line_aux3([[H|T]|[Head|Tail]],Aux,P,H):-
+win_by_line_aux3([[]|Tail],P):-
+  win_by_line_aux3(Tail,P).
+win_by_line_aux3([[H|T]|[Head,Head2|_]],H):-
   \+H is 0,
-  Aux1 is Aux+1,
   length(T,Len),
-  Len2 is Len+2,
-  length(List,Len2),
-  append(_,List,Head),
-  Aux1 is Aux+1,
-  win_by_line_aux3([List|Tail],Aux1,P,H).
-win_by_line_aux3([[H|T]|[Head|Tail]],_,P,_):-
+  length([H1|T1],Len),
+  append(_,[H1|T1],Head),
+  H1 is H,
+  Len1 is Len-1,
+  Len1 > -1,
+  length([H2|T2],Len1),
+  append(_,[H2|T2],Head2),
+  H2 is H.
+win_by_line_aux3([[H|T]|[Head,Head2|_]],H):-
+  \+H is 0,
   length(T,Len),
-  Len2 is Len+2,
-  length(List,Len2),
-  append(_,List,Head),
-  win_by_line_aux3([List|Tail],1,P,H).
+  Len1 is Len +2,
+  length([H1|T1],Len1),
+  append(_,[H1|T1],Head),
+  H1 is H,
+  Len2 is Len1+1,
+  length([H2|T2],Len2),
+  append(_,[H2|T2],Head2),
+  H2 is H.
+win_by_line_aux3([[_|T]|Tail],P):-
+  win_by_line_aux3([T|Tail],P).
 
 %move functions
 
