@@ -48,20 +48,22 @@ game(P1/P2):-
   game_state(T,_,_,_),
   Player is T mod 2,
   Player =:= 1,
-  player_turn(Player, P1),
+  player_turn(1, P1),
   clear,
   display_game,
-  line_win,
+  line_win(1),
   game(P1/P2).
 
 game(P1/P2):-
   game_state(T, _, _, _),
+  trace,
   Player is T mod 2,
   Player =:= 0,
   player_turn(2, P2),
+  notrace,
   clear,
   display_game,
-  line_win,
+  line_win(2),
   game(P1/P2).
 
 

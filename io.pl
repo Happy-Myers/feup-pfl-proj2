@@ -75,7 +75,7 @@ error_message:-
     format('It seems an error occurred. Returning to main menu...~n', []).
 
 congratulate(Winner):-
-    format('Player ~a Won!~nCongratulations!!!~n~n Press Enter to return to menu.', [Winner]),
+    format('Player ~d Won!~nCongratulations!!!~n~n Press Enter to return to menu.', [Winner]),
     read_line(_).
 
 
