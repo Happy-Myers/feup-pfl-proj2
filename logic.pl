@@ -164,12 +164,7 @@ player_state(2, 0).
 
 %get_position(+Row,+Col,?N)
 get_position(Row, Col, N):-
-  size(Size),
   board(B),
-  Row >= 0,
-  Row < Size,
-  Col >= 0, 
-  Col < Size,
   nth0(Row, B, Row1),
   nth0(Col, Row1, N).
 
@@ -279,6 +274,7 @@ eat_piece(Player, Row1,Col1,Row2,Col2):-
 
 %check_eat(+Player).
 check_eat(Player):-
+  get_position(X2,Y2,Player),
   findall((X1-Y1, X2-Y2), valid_eat(Player, X1, Y1, X2, Y2), [_|_]).
 
 %valid_place(+Player, +Row, +Col).
@@ -310,27 +306,23 @@ get_landing(Row, Col, DestRow, DestCol, FinalRow, FinalCol):-
 
   
 %adjacent(+Row1, +Col1, +Row2, +Col2).
+adjacent(Row1, Col1, Row2, Col1) :- 
+  Row1 is Row2-1. 
+adjacent(Row1, Col1, Row2, Col1) :- 
+  Row1 is Row2+1.
+adjacent(Row1, Col1, Row1, Col2) :- 
+  Col1 is Col2-1. 
+adjacent(Row1, Col1, Row1, Col2) :- 
+  Col1 is Col2+1. 
 adjacent(Row1, Col1, Row2, Col2) :- 
-  Row1 =:= Row2-1, 
-  Col1 =:= Col2. 
+  Row1 is Row2-1, 
+  Col1 is Col2-1.
 adjacent(Row1, Col1, Row2, Col2) :- 
-  Row1 =:= Row2+1, 
-  Col1 =:= Col2. 
+  Row1 is Row2+1, 
+  Col1 is Col2-1.  
 adjacent(Row1, Col1, Row2, Col2) :- 
-  Row1 =:= Row2, 
-  Col1 =:= Col2-1. 
+  Row1 is Row2-1, 
+  Col1 is Col2+1.  
 adjacent(Row1, Col1, Row2, Col2) :- 
-  Row1 =:= Row2, 
-  Col1 =:= Col2+1. 
-adjacent(Row1, Col1, Row2, Col2) :- 
-  Row1 =:= Row2-1, 
-  Col1 =:= Col2-1.
-adjacent(Row1, Col1, Row2, Col2) :- 
-  Row1 =:= Row2+1, 
-  Col1 =:= Col2-1.  
-adjacent(Row1, Col1, Row2, Col2) :- 
-  Row1 =:= Row2-1, 
-  Col1 =:= Col2+1.  
-adjacent(Row1, Col1, Row2, Col2) :- 
-  Row1 =:= Row2+1, 
-  Col1 =:= Col2+1.  
+  Row1 is Row2+1, 
+  Col1 is Col2+1. 

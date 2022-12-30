@@ -20,7 +20,7 @@ main_menu :-
   Option > 0,
   Option < 5,
   (
-    Option =:= 4;
+    Option is 4;
     clear,
     main_menu(Option),
     fail
@@ -47,7 +47,7 @@ game(_):-
 game(P1/P2):-
   game_state(T,_,_,_),
   Player is T mod 2,
-  Player =:= 1,
+  Player is 1,
   player_turn(1, P1),
   clear,
   display_game,
@@ -58,7 +58,7 @@ game(P1/P2):-
   game_state(T, _, _, _),
   trace,
   Player is T mod 2,
-  Player =:= 0,
+  Player is 0,
   player_turn(2, P2),
   notrace,
   clear,
