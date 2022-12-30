@@ -274,8 +274,12 @@ eat_piece(Player, Row1,Col1,Row2,Col2):-
 
 %check_eat(+Player).
 check_eat(Player):-
-  get_position(X2,Y2,Player),
-  findall((X1-Y1, X2-Y2), valid_eat(Player, X1, Y1, X2, Y2), [_|_]).
+  setof(X-Y,get_position(X,Y,Player),N),
+  check_eat_aux(Player,N).
+
+check_eat_aux(Player,[X-Y|T]):-
+  check_eat_aux(Player,T);
+  setof((X1-Y1), valid_eat(Player, X, Y, X1, Y1), [_|_]).
 
 %valid_place(+Player, +Row, +Col).
 valid_place(Player, Row, Col):-
@@ -291,8 +295,8 @@ valid_move(Player, Row, Col, DestRow, DestCol):-
 
 %valid_eat(+Player, +Row, +Col, +DestRow, +DestCol).
 valid_eat(Player, Row, Col, DestRow, DestCol):-
+  adjacent(DestRow, DestCol, Row, Col),
   get_position(Row, Col, Player),
-  adjacent(Row, Col, DestRow, DestCol),
   Player2 is Player mod 2 +1,
   get_position(DestRow, DestCol, Player2),
   get_landing(Row, Col, DestRow, DestCol, FinalRow, FinalCol),
