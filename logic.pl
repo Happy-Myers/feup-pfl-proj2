@@ -17,7 +17,17 @@ initial_state(Size, Board):-
     Npieces is Size * Size // 2,
     retractall(pieces(_, _)),
     assert(pieces(1, Npieces)),
-    assert(pieces(2, Npieces)).
+    assert(pieces(2, Npieces)),
+    retractall(pos(_)),
+    set_pos(Size, 0).
+
+set_pos(Size, Size).
+set_pos(Size, N):-
+  N < Size,
+  assert(pos(N)),
+  N1 is N + 1,
+  set_pos(Size, N1).
+
 
 %create_board(+Size, -Board).
 create_board(Size, Board):-
@@ -164,6 +174,11 @@ player_state(2, 0).
 
 %get_position(+Row,+Col,?N)
 get_position(Row, Col, N):-
+  size(Size),
+  Row >= 0,
+  Row < Size,
+  Col >= 0, 
+  Col < Size,
   board(B),
   nth0(Row, B, Row1),
   nth0(Col, Row1, N).
@@ -274,12 +289,8 @@ eat_piece(Player, Row1,Col1,Row2,Col2):-
 
 %check_eat(+Player).
 check_eat(Player):-
-  setof(X-Y,get_position(X,Y,Player),N),
-  check_eat_aux(Player,N).
+  findall(X1-Y1/X2-Y2, (pos(X1), pos(X2), pos(Y1), pos(Y2), valid_eat(Player, X1, Y1, X2, Y2)), [_|_]).
 
-check_eat_aux(Player,[X-Y|T]):-
-  check_eat_aux(Player,T);
-  setof((X1-Y1), valid_eat(Player, X, Y, X1, Y1), [_|_]).
 
 %valid_place(+Player, +Row, +Col).
 valid_place(Player, Row, Col):-
