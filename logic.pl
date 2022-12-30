@@ -241,6 +241,8 @@ line_win(Player):-
   retract(player_state(Player, _)),
   assert(player_state(Player, 6)).
 
+line_win(_).
+
 %move functions
 
 %place_piece(+C,+Row,+Col)

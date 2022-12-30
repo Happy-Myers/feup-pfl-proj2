@@ -82,7 +82,8 @@ error_message:-
 
 congratulate(Winner):-
     format('Player ~d Won!~nCongratulations!!!~n~n Press Enter to return to menu.', [Winner]),
-    read_line(_).
+    read_line(_),
+    !.
 
 
 
