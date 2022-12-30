@@ -133,8 +133,8 @@ choose_play(3,Player):- % eat
   NCol2 is Col2 - 1,
   NRow1 is Row1 - 1,
   NRow2 is Row2 - 1,
-  eat_piece(Player,NRow1,NCol1,NRow2,NCol2),
-  mutiple_eat(Player),
+  eat_piece(Player,NRow1,NCol1,NRow2,NCol2, Row3, Col3),
+  mutiple_eat(Player, Row3, Col3),
   retract(turnNum(N)),
   N1 is N+1,
   assert(turnNum(N1)),
@@ -278,7 +278,7 @@ move_piece(Player,Row1,Col1,Row2,Col2):-
 
 
 %eat_piece(+Player,+Row,+Col,+Row2,+Col2)
-eat_piece(Player, Row1,Col1,Row2,Col2):-
+eat_piece(Player, Row1,Col1,Row2,Col2, Row3, Col3):-
   valid_eat(Player, Row1, Col1, Row2, Col2),
   retract(board(B)),
   get_landing(Row1, Col1, Row2, Col2, Row3, Col3),
@@ -294,26 +294,25 @@ eat_piece(Player, Row1,Col1,Row2,Col2):-
 check_eat(Player):-
   findall(X1-Y1/X2-Y2, (pos(X1), pos(X2), pos(Y1), pos(Y2), valid_eat(Player, X1, Y1, X2, Y2)), [_|_]).
 
-mutiple_eat(Player):-
-  check_eat(Player),
-  display_game,
-  another_eat(Player).
-mutiple_eat(_).
+check_second_eat(Player, X1, Y1):-
+  findall(X1-Y1/X2-Y2, (adjacent(X1, Y1, X2, Y2), valid_eat(Player, X1, Y1, X2, Y2)), [_|_]).
 
-another_eat(Player):-
-  format('Player ~d capture another piece~n Piece to move:~n', [Player]),
-  get_coord(Row1, Col1),
+mutiple_eat(Player, Row, Col):-
+  check_second_eat(Player, Row, Col),
+  display_game,
+  another_eat(Player, Row, Col).
+mutiple_eat(_,_,_).
+
+another_eat(Player, Row1, Col1):-
   format('Piece to eat:~n', []),
   get_coord(Row2, Col2),
-  NCol1 is Col1 - 1,
   NCol2 is Col2 - 1,
-  NRow1 is Row1 - 1,
   NRow2 is Row2 - 1,
-  eat_piece(Player,NRow1,NCol1,NRow2,NCol2),
+  eat_piece(Player,Row1,Col1,NRow2,NCol2, Row3, Col3),
   add_point(Player),
-  mutiple_eat(Player).
-another_eat(Player):-
-  mutiple_eat(Player).
+  mutiple_eat(Player, Row3, Col3).
+another_eat(Player, Row, Col):-
+  mutiple_eat(Player, Row, Col).
 
 %valid_place(+Player, +Row, +Col).
 valid_place(Player, Row, Col):-
@@ -345,22 +344,22 @@ get_landing(Row, Col, DestRow, DestCol, FinalRow, FinalCol):-
   
 %adjacent(+Row1, +Col1, +Row2, +Col2).
 adjacent(Row1, Col1, Row2, Col1) :- 
-  Row1 is Row2-1. 
+  Row2 is Row1+1.
 adjacent(Row1, Col1, Row2, Col1) :- 
-  Row1 is Row2+1.
+  Row2 is Row1-1.
 adjacent(Row1, Col1, Row1, Col2) :- 
-  Col1 is Col2-1. 
+  Col2 is Col1+1.
 adjacent(Row1, Col1, Row1, Col2) :- 
-  Col1 is Col2+1. 
+  Col2 is Col1-1.
 adjacent(Row1, Col1, Row2, Col2) :- 
-  Row1 is Row2-1, 
-  Col1 is Col2-1.
+  Row2 is Row1+1, 
+  Col2 is Col1+1.
 adjacent(Row1, Col1, Row2, Col2) :- 
-  Row1 is Row2+1, 
-  Col1 is Col2-1.  
+  Row2 is Row1-1, 
+  Col2 is Col1+1.  
 adjacent(Row1, Col1, Row2, Col2) :- 
-  Row1 is Row2-1, 
-  Col1 is Col2+1.  
+  Row2 is Row1+1, 
+  Col2 is Col1-1.  
 adjacent(Row1, Col1, Row2, Col2) :- 
-  Row1 is Row2+1, 
-  Col1 is Col2+1. 
+  Row2 is Row1-1, 
+  Col2 is Col1-1. 
