@@ -20,7 +20,7 @@ main_menu :-
   Option > 0,
   Option < 5,
   (
-    Option =:= 4;
+    Option is 4;
     clear,
     main_menu(Option),
     fail
@@ -34,4 +34,40 @@ main_menu(3):- get_boardsize.
 play:-
   size(Size),
   initial_state(Size, _),
-  pvp.
+  gamemode(Gamemode),
+  clear,
+  display_game,
+  game(Gamemode).
+
+game(_):-
+  game_over(Winner), 
+  congratulate(Winner),
+  start.
+
+game(_):-
+  line_win(Winner),
+  congratulate(Winner),
+  start.
+
+
+game(P1/P2):-
+  game_state(T,_,_,_),
+  Player is T mod 2,
+  Player is 1,
+  player_turn(1, P1),
+  clear,
+  display_game,
+  game(P1/P2).
+
+game(P1/P2):-
+  game_state(T, _, _, _),
+  Player is T mod 2,
+  Player is 0,
+  player_turn(2, P2),
+  clear,
+  display_game,
+  game(P1/P2).
+  
+
+
+

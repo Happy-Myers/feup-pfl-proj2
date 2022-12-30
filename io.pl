@@ -7,7 +7,7 @@ encoding(utf8).
 welcome_message:-
     format('Welcome to Moxie!~nLet\'s play!~n', []).
 
-:- dynamic gamemode/1, size/1, board/1.
+:- dynamic gamemode/1, size/1, board/1, pieces/2, pos/1.
 
 gamemode(h/h).    %default gamemode is human vs human
 size(4).          %default size is 4x4
@@ -16,6 +16,16 @@ board([
   [0,0,0,0],
   [0,0,0,0],
   [0,0,0,0]]).     % default board.
+
+%pieces(+Player, ?Pieces_left).
+pieces(1, 8).
+pieces(2, 8).
+
+
+pos(0).
+pos(1).
+pos(2).
+pos(3).
 
 %clear.
 clear :- 
@@ -69,6 +79,10 @@ get_boardsize :- error_message.
 
 error_message:-
     format('It seems an error occurred. Returning to main menu...~n', []).
+
+congratulate(Winner):-
+    format('Player ~d Won!~nCongratulations!!!~n~n Press Enter to return to menu.', [Winner]),
+    read_line(_).
 
 
 
