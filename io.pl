@@ -12,9 +12,9 @@ welcome_message:-
 gamemode(h/h).    %default gamemode is human vs human
 size(4).          %default size is 4x4
 board([
-  [0,1,0,0],
-  [0,1,0,0],
-  [0,2,0,0],
+  [0,0,0,0],
+  [0,0,0,0],
+  [0,0,0,0],
   [0,0,0,0]]).     % default board.
 
 %pieces(+Player, ?Pieces_left).

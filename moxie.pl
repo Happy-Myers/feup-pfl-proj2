@@ -43,6 +43,10 @@ game(_):-
   game_over(Winner), 
   congratulate(Winner).
 
+game(_):-
+  line_win(Winner),
+  congratulate(Winner).
+
 
 game(P1/P2):-
   game_state(T,_,_,_),
@@ -51,20 +55,17 @@ game(P1/P2):-
   player_turn(1, P1),
   clear,
   display_game,
-  line_win(1),
   game(P1/P2).
 
 game(P1/P2):-
   game_state(T, _, _, _),
-  trace,
   Player is T mod 2,
   Player is 0,
   player_turn(2, P2),
-  notrace,
   clear,
   display_game,
-  line_win(2),
   game(P1/P2).
+  
 
 
 
