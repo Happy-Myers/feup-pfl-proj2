@@ -7,7 +7,7 @@ encoding(utf8).
 welcome_message:-
     format('Welcome to Moxie!~nLet\'s play!~n', []).
 
-:- dynamic gamemode/1, size/1, board/1, pieces/2, pos/1.
+:- dynamic gamemode/1, size/1, board/1, pieces/2.
 
 gamemode(h/h).    %default gamemode is human vs human
 size(4).          %default size is 4x4
@@ -21,11 +21,6 @@ board([
 pieces(1, 8).
 pieces(2, 8).
 
-
-pos(0).
-pos(1).
-pos(2).
-pos(3).
 
 %clear.
 clear :- 

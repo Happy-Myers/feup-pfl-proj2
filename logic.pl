@@ -1,4 +1,5 @@
 :-use_module(library(lists)).
+:-use_module(library(between)).
 :-consult('io.pl').
 
 %initial_state(+Size, ?Gamestate).
@@ -17,16 +18,8 @@ initial_state(Size, Board):-
     Npieces is Size * Size // 2,
     retractall(pieces(_, _)),
     assert(pieces(1, Npieces)),
-    assert(pieces(2, Npieces)),
-    retractall(pos(_)),
-    set_pos(Size, 0).
+    assert(pieces(2, Npieces)).
 
-set_pos(Size, Size).
-set_pos(Size, N):-
-  N < Size,
-  assert(pos(N)),
-  N1 is N + 1,
-  set_pos(Size, N1).
 
 
 %create_board(+Size, -Board).
@@ -134,7 +127,7 @@ choose_play(3,Player):- % eat
   NRow1 is Row1 - 1,
   NRow2 is Row2 - 1,
   eat_piece(Player,NRow1,NCol1,NRow2,NCol2, Row3, Col3),
-  mutiple_eat(Player, Row3, Col3),
+  multiple_eat(Player, Row3, Col3),
   retract(turnNum(N)),
   N1 is N+1,
   assert(turnNum(N1)),
@@ -292,16 +285,18 @@ eat_piece(Player, Row1,Col1,Row2,Col2, Row3, Col3):-
 
 %check_eat(+Player).
 check_eat(Player):-
-  findall(X1-Y1/X2-Y2, (pos(X1), pos(X2), pos(Y1), pos(Y2), valid_eat(Player, X1, Y1, X2, Y2)), [_|_]).
+  size(Size),
+  Size1 is Size-1,
+  findall(X1-Y1/X2-Y2, (between(0, Size1, X1), between(0, Size1, Y1), valid_eat(Player, X1, Y1, X2, Y2)), [_|_]).
 
 check_second_eat(Player, X1, Y1):-
-  findall(X1-Y1/X2-Y2, (adjacent(X1, Y1, X2, Y2), valid_eat(Player, X1, Y1, X2, Y2)), [_|_]).
+  findall(X1-Y1/X2-Y2, valid_eat(Player, X1, Y1, X2, Y2), [_|_]).
 
-mutiple_eat(Player, Row, Col):-
+multiple_eat(Player, Row, Col):-
   check_second_eat(Player, Row, Col),
   display_game,
   another_eat(Player, Row, Col).
-mutiple_eat(_,_,_).
+multiple_eat(_,_,_).
 
 another_eat(Player, Row1, Col1):-
   format('Piece to eat:~n', []),
@@ -310,9 +305,9 @@ another_eat(Player, Row1, Col1):-
   NRow2 is Row2 - 1,
   eat_piece(Player,Row1,Col1,NRow2,NCol2, Row3, Col3),
   add_point(Player),
-  mutiple_eat(Player, Row3, Col3).
+  multiple_eat(Player, Row3, Col3).
 another_eat(Player, Row, Col):-
-  mutiple_eat(Player, Row, Col).
+  multiple_eat(Player, Row, Col).
 
 %valid_place(+Player, +Row, +Col).
 valid_place(Player, Row, Col):-
@@ -328,7 +323,7 @@ valid_move(Player, Row, Col, DestRow, DestCol):-
 
 %valid_eat(+Player, +Row, +Col, +DestRow, +DestCol).
 valid_eat(Player, Row, Col, DestRow, DestCol):-
-  adjacent(DestRow, DestCol, Row, Col),
+  adjacent(Row, Col, DestRow, DestCol),
   get_position(Row, Col, Player),
   Player2 is Player mod 2 +1,
   get_position(DestRow, DestCol, Player2),
@@ -363,3 +358,28 @@ adjacent(Row1, Col1, Row2, Col2) :-
 adjacent(Row1, Col1, Row2, Col2) :- 
   Row2 is Row1-1, 
   Col2 is Col1-1. 
+
+
+pieces_on_board(Player, N):-
+  size(Size),
+  Size1 is Size -1,
+  findall(X-Y, (between(0, Size1, X), between(0, Size1, Y), get_position(X, Y, Player)), L),
+  sort(L, L1)
+  length(L1, N).
+
+valid_plays(Player, Plays):-
+  size(Size),
+  Size1 is Size -1,
+  check_eat(Player),
+  findall(eat/X1-Y1/X2-Y2, (between(0, Size1, X1), between(0, Size1, Y1), valid_eat(Player, X1, Y1, X2, Y2)), L),
+  sort(L, Plays).
+
+valid_plays(Player, Plays):-
+  size(Size),
+  Size1 is Size -1,
+  findall(place/X1-Y1, (between(0, Size1, X1), between(0, Size1, Y1), valid_place(Player, X1, Y1)), L1),
+  findall(move/X1-Y1/X2-Y2, (between(0, Size1, X1), between(0, Size1, Y1), valid_move(Player, X1, Y1, X2, Y2)), L2),
+  append(L1, L2, L),
+  sort(L, Plays).
+
+
