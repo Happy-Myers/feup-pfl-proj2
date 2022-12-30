@@ -41,11 +41,13 @@ play:-
 
 game(_):-
   game_over(Winner), 
-  congratulate(Winner).
+  congratulate(Winner),
+  start.
 
 game(_):-
   line_win(Winner),
-  congratulate(Winner).
+  congratulate(Winner),
+  start.
 
 
 game(P1/P2):-
