@@ -87,6 +87,9 @@ player_turn(Player, pc1):-
   valid_plays(Player, Board, Plays),
   random_select(Play, Plays, _),
   sleep(3),
+  retract(turnNum(Num)),
+  Num1 is Num +1,
+  assert(turnNum(Num1)),
   bot_play(Player, Board, Play).
 
 player_turn(Player, pc2):-
@@ -94,6 +97,9 @@ player_turn(Player, pc2):-
   valid_plays(Player, Board, Plays),
   best_play(Player, Plays, Board, BestPlay, _),
   sleep(3),
+  retract(turnNum(Num)),
+  Num1 is Num +1,
+  assert(turnNum(Num1)),
   bot_play(Player, Board, BestPlay).
 
 %check_board(+Player, +Board).
