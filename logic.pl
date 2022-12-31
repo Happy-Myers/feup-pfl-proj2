@@ -83,6 +83,7 @@ player_turn(Player, h):-
   player_turn(Player, h).
 
 player_turn(Player, pc1):-
+  init_random_state,
   board(Board),
   valid_plays(Player, Board, Plays),
   random_select(Play, Plays, _),
