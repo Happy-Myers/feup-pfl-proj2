@@ -36,7 +36,7 @@ main_menu(3):- get_boardsize.
 %play.
 play:-
   size(Size),
-  initial_state(Size, _),
+  initial_state(Size),
   gamemode(Gamemode),
   clear,
   display_game,

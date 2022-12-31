@@ -38,13 +38,13 @@ valid_gamemode(P1/P2):-
 % valid_player_type(+Type)
 
 valid_player_type(h).
-valid_player_type(pc-1).
-valid_player_type(pc-2).
+valid_player_type(pc1).
+valid_player_type(pc2).
 
 %get_gamemode.
 
 get_gamemode:-
-    format('What game mode would you like to play?~nWrite it in the form "P1/P2", where either can be h or "pc-[1/2]": ', []),
+    format('What game mode would you like to play?~nWrite it in the form "P1/P2", where either can be h or "pc[1/2]": ', []),
     read_line(Gamemode),
     char_code('/', Bar),
     append(Codes1, [Bar|Codes2], Gamemode),
