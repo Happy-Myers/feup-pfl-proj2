@@ -83,15 +83,15 @@ player_turn(Player, h):-
   player_turn(Player, h).
 
 player_turn(Player, pc1):-
-  valid_plays(Player, Plays),
-  random_select(Play, Plays, _),
   board(Board),
+  valid_plays(Player, Board, Plays),
+  random_select(Play, Plays, _),
   sleep(3),
   bot_play(Player, Board, Play).
 
 player_turn(Player, pc2):-
-  valid_plays(Player, Plays),
   board(Board),
+  valid_plays(Player, Board, Plays),
   best_play(Player, Plays, Board, BestPlay, _),
   sleep(3),
   bot_play(Player, Board, BestPlay).
@@ -396,18 +396,18 @@ pieces_on_board(Player, N, Board):-
   sort(L, L1),
   length(L1, N).
 
-valid_plays(Player, Plays):-
+valid_plays(Player, Board, Plays):-
   size(Size),
   Size1 is Size -1,
   check_eat(Player),
-  findall(eat/X1-Y1/X2-Y2, (between(0, Size1, X1), between(0, Size1, Y1), valid_eat(Player, X1, Y1, X2, Y2)), L),
+  findall(eat/X1-Y1/X2-Y2, (between(0, Size1, X1), between(0, Size1, Y1), valid_eat(Player, X1, Y1, X2, Y2, Board)), L),
   sort(L, Plays).
 
-valid_plays(Player, Plays):-
+valid_plays(Player, Board, Plays):-
   size(Size),
   Size1 is Size -1,
-  findall(place/X1-Y1, (between(0, Size1, X1), between(0, Size1, Y1), valid_place(Player, X1, Y1)), L1),
-  findall(move/X1-Y1/X2-Y2, (between(0, Size1, X1), between(0, Size1, Y1), valid_move(Player, X1, Y1, X2, Y2)), L2),
+  findall(place/X1-Y1, (between(0, Size1, X1), between(0, Size1, Y1), valid_place(Player, X1, Y1, Board)), L1),
+  findall(move/X1-Y1/X2-Y2, (between(0, Size1, X1), between(0, Size1, Y1), valid_move(Player, X1, Y1, X2, Y2, Board)), L2),
   append(L1, L2, L),
   sort(L, Plays).
 
