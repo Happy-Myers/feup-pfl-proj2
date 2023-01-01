@@ -101,8 +101,9 @@ display_char(2, 'O').
 display_game:-
     size(Size),
     board(Board),
+    display_x_axis(Size),
     display_edge_line(Size, first),
-    display_lines(Board),
+    display_lines(Board, Size, 1),
     display_edge_line(Size, last).
 
 %display_edge_line(+Size, +Side).
@@ -113,16 +114,23 @@ display_edge_line(Size, Side):-
 
 %display_lines(+Board).
 
-display_lines([]).
-display_lines([BoardLine]):- 
+display_lines([], _, _).
+display_lines([BoardLine], Size, _):- 
+    write(' '),
+    write(Size),
+    write(' '),
     write('\x2503\'), 
     display_checker_line(BoardLine), nl, !.
-display_lines([BoardLine|T]):- 
+display_lines([BoardLine|T], Size, Curr):- 
+    write(' '),
+    write(Curr),
+    write(' '),
     write('\x2503\'), 
     display_checker_line(BoardLine), nl,
     size(Size),
     display_intermediate_line(Size, '\x2503\', '\x2503\', '\x2503\'), nl,
-    display_lines(T).
+    Curr1 is Curr + 1,
+    display_lines(T, Size, Curr1).
 
 %display_checker_line(+BoardRow).
 display_checker_line([]).
@@ -135,6 +143,7 @@ display_checker_line([Checker|T]):-
 %display_intermediate_line(+Size, +LeftEdge, +Mid, +RightEdge).
 
 display_intermediate_line(Size, LeftEdge, Mid, RightEdge):-
+    write('   '),
     write(LeftEdge),
     write('\x2501\\x2501\\x2501\'),
     Size1 is Size -1, 
@@ -150,6 +159,20 @@ display_box_edges(N, Mid, Edge):-
     write(Mid),
     write(Edge),
     display_box_edges(N1, Mid, Edge).
+
+print_x(Acc, Size):-
+    Acc =< Size,
+    write(' '),
+    write(Acc),
+    write('  '),
+    Acc1 is Acc + 1,
+    print_x(Acc1, Size).
+print_x(_, _).
+
+display_x_axis(Size):-
+    write('    '),
+    print_x(1, Size),
+    nl.
 
 
 
