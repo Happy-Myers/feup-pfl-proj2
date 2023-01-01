@@ -1,9 +1,8 @@
-:- consult('io.pl').
 :- consult('logic.pl').
 
 
 %start.
-
+%prints welcome message and starts menu loop.
 start:-
   clear,
   welcome_message,
@@ -11,7 +10,7 @@ start:-
 
 
 %main_menu.
-
+%menu with options to change some settings and play the game.
 main_menu :-
   repeat,
   format('What would you like to do?~n1 - Play.~n2 - Change gamemode.~n3 - Change board size.~n4 - leave.~n', []),
@@ -34,6 +33,7 @@ main_menu(2):- get_gamemode.
 main_menu(3):- get_boardsize.
 
 %play.
+%starts the game loop
 play:-
   size(Size),
   initial_state(Size),
@@ -41,6 +41,9 @@ play:-
   clear,
   display_game,
   game(Gamemode).
+
+%game.
+%main game loop
 
 game(_):-
   game_over(Winner), 
