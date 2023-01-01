@@ -44,7 +44,8 @@ fill_row(Size, Row) :-
 %game_over(Winner).
 
 game_over(Winner):-
-  player_state(Winner,6).
+  player_state(Winner,Points),
+  Points >= 6.
 
 
 % player_turn(+Player, +PlayerType).
@@ -528,6 +529,16 @@ place_value(_, _, _, 0).
 
 
 play_value(Player, place/X-Y, Board, Value):-
+  Player2 is Player mod 2 +1,
+  check_opponent_win(Player2, Board, X, Y),
+  Value is 1000.
+
+play_value(Player, move/X-Y, Board, Value):-
+  Player2 is Player mod 2 +1,
+  check_opponent_win(Player2, Board, X, Y),
+  Value is 1000.
+
+play_value(Player, place/X-Y, Board, Value):-
   place_value(Player, X-Y, Board, Value1),
   winning_moves(Player, Board, place/X-Y, Value2),
   potential_piece_difference(Player, Board, place/X-Y, Value3),
@@ -569,3 +580,7 @@ bot_play(_, _, eat/_-_/_-_).
 
 bot_play(Player, Board, move/X1-Y1/X2-Y2):-
   move_piece(Player, X1, Y1, X2, Y2, Board).
+
+check_opponent_win(Player2, Board, X, Y):-
+  replace(Board, Player2, X, Y, Board2),
+  line_of_three(Board2,Player2).
