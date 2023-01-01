@@ -3,6 +3,7 @@ encoding(utf8).
 %% menu I/O
 
 %welcome_message.
+% - prints welcome message.
 
 welcome_message:-
     format('Welcome to Moxie!~nLet\'s play!~n', []).
@@ -23,11 +24,12 @@ pieces(2, 8).
 
 
 %clear.
+% - clears the terminal
 clear :- 
     write('\e[2J').
 
 %valid_gamemode(+Gamemode)
-
+% validates gamemode input format
 valid_gamemode(P1/P2):-
     ground(P1), 
     ground(P2),
@@ -36,13 +38,13 @@ valid_gamemode(P1/P2):-
 
 
 % valid_player_type(+Type)
-
+% validates player type input
 valid_player_type(h).
 valid_player_type(pc1).
 valid_player_type(pc2).
 
 %get_gamemode.
-
+% asks for gamemode input and processes it
 get_gamemode:-
     format('What game mode would you like to play?~nWrite it in the form "P1/P2", where either can be h or "pc[1/2]": ', []),
     read_line(Gamemode),
@@ -59,7 +61,7 @@ get_gamemode:-
 
 
 %get_boardsize.
-
+%asks for board size input and processes it
 get_boardsize:-
     format('Board size? Recommended: 4 / 5~n', []),
     read_line(Codes),
@@ -71,10 +73,13 @@ get_boardsize:-
 get_boardsize :- error_message.
 
 %error_message.
-
+%displays error message
 error_message:-
     format('It seems an error occurred. Returning to main menu...~n', []).
 
+
+%congratulate(+Winner)
+%congratulates the games winnier (Player 1 or 2)
 congratulate(Winner):-
     format('Player ~d Won!~nCongratulations!!!~n~n Press Enter to return to menu.', [Winner]),
     read_line(_),
@@ -85,11 +90,12 @@ congratulate(Winner):-
 %% display board
 
 % side_chars(?Line, ?[LeftCorner, Mid, Rightcorner]).
-
+%defines special characters to use on the upper and lower ends of the board
 side_chars(first, ['\x250F\', '\x2533\', '\x2513\']).
 side_chars(last, ['\x2517\', '\x253B\', '\x2518\']).
 
 %display_char(?piece, ?char).
+%displays the content of a cell in the board
 % 0 -> empty, 1 -> player1(cross), 2-> player2(circle).
 
 display_char(0, ' ').
@@ -97,7 +103,7 @@ display_char(1, 'X').
 display_char(2, 'O').
 
 %display_game(+Gamestate).
-
+%displays board with numbered coordinates for x and y axis
 display_game:-
     size(Size),
     board(Board),
@@ -107,13 +113,13 @@ display_game:-
     display_edge_line(Size, last).
 
 %display_edge_line(+Size, +Side).
-
+%displays upper and lower ends of the board
 display_edge_line(Size, Side):-
     side_chars(Side, [LeftCorner, Mid, RightCorner]),
     display_intermediate_line(Size, LeftCorner, Mid, RightCorner), nl.
 
 %display_lines(+Board).
-
+%displays a line of cells and the intersection line between lines of cells
 display_lines([], _, _).
 display_lines([BoardLine], Size, _):- 
     write(' '),
@@ -133,6 +139,7 @@ display_lines([BoardLine|T], Size, Curr):-
     display_lines(T, Size, Curr1).
 
 %display_checker_line(+BoardRow).
+%displays line of cells.
 display_checker_line([]).
 display_checker_line([Checker|T]):-
     display_char(Checker, Char),
@@ -141,7 +148,7 @@ display_checker_line([Checker|T]):-
     display_checker_line(T).
 
 %display_intermediate_line(+Size, +LeftEdge, +Mid, +RightEdge).
-
+% displays intersection between lines of cells
 display_intermediate_line(Size, LeftEdge, Mid, RightEdge):-
     write('   '),
     write(LeftEdge),
@@ -160,6 +167,9 @@ display_box_edges(N, Mid, Edge):-
     write(Edge),
     display_box_edges(N1, Mid, Edge).
 
+%print_x(+Acc, +Size).
+% prints a line with all the X axis coordinates
+
 print_x(Acc, Size):-
     Acc =< Size,
     write(' '),
@@ -169,6 +179,8 @@ print_x(Acc, Size):-
     print_x(Acc1, Size).
 print_x(_, _).
 
+%display_x_axis(+Size).
+%displays all x axis coordinates aligned with the board.
 display_x_axis(Size):-
     write('    '),
     print_x(1, Size),

@@ -4,12 +4,14 @@
 :-use_module(library(system)).
 :-consult('io.pl').
 
-%initial_state(+Size, ?Gamestate).
-
+%init_random_state.
+%initializes seed for random number generator
 init_random_state:-
   now(X),
   setrand(X).
 
+%initial_state(+Size, ?Size).
+%initializes all important variables.
 initial_state(Size):-
     Size > 0,
     create_board(Size, Board),
@@ -27,28 +29,31 @@ initial_state(Size):-
     assert(pieces(2, Npieces)).
 
 
-
 %create_board(+Size, -Board).
+%crates a list with adequate size.
 create_board(Size, Board):-
   length(Board, Size).
 
 %fill_board(+Size, +Board).
+%fills the board list with empty lists.
 fill_board(Size, Board):-
   maplist(fill_row(Size), Board).
 
 % fill_row(+Size, -Row).
+%initializes the empty lists with 0's
 fill_row(Size, Row) :-
   length(Row, Size),
   maplist(=(0), Row).
 
 %game_over(Winner).
-
+%detects finished game
 game_over(Winner):-
   player_state(Winner,6).
 
-
 % player_turn(+Player, +PlayerType).
-
+% gets the options available to the players and gets input on the kind of play to make.(human)
+% chooses a random move to make (pc1).
+% chooses the best move to make (pc2).
 player_turn(Player, h):-
   check_eat(Player),
   format('Player ~d choose your move~n1 - capture piece~n', [Player]),
@@ -104,11 +109,13 @@ player_turn(Player, pc2):-
   bot_play(Player, Board, BestPlay).
 
 %check_board(+Player, +Board).
+%checks if the current player has any pieces on the board to move.
 check_board(Player, Board):-
   member(Row, Board),
   member(Player, Row).
 
 %get_coord(-X, -Y).
+% prompts the player for coordinate input and processes it.
 get_coord(X, Y):-
   format('input row~n', []),
   read_line(XCode),
@@ -119,6 +126,7 @@ get_coord(X, Y):-
 
 
 %choose_play(+Play,+Player)
+%gets coordinates needed to make the play and advances to next turn.
 choose_play(1,Player):- % move
   format('piece coordinates:~n', []),
   get_coord(Row1, Col1),
@@ -167,6 +175,7 @@ choose_play(_,_):-
   format('invalid input~n', []).
 
 %add_point(Player)
+%adds points to a player whenever they capture a piece.
 add_point(Player):-
   retract(player_state(Player, Points)),
   Points1 is Points +1,
@@ -174,15 +183,14 @@ add_point(Player):-
 
 
 %remove_piece(Player)
-
+%subtracts one from the number of available pieces when a player places one on the board.
 remove_piece(Player):-
   retract(pieces(Player, Pieces)),
   Pieces1 is Pieces - 1,
   assert(pieces(Player, Pieces1)).
 
-%board functions
-
 %game_state(-turnNum,-P1State,-P2State,-Board)
+%gets game state.
 game_state(T,P1,P2,B):-
   turnNum(T),
   player_state(1, P1),
@@ -194,9 +202,10 @@ turnNum(1).
 player_state(1, 0).
 player_state(2, 0).
 
-%board functions
+%board predicates
 
-%get_position(+Row,+Col,?N)
+%get_position(+Board, +Row,+Col,?N)
+%gets content of one of the board's cells based on coordinates.
 get_position(Board, Row, Col, N):-
   size(Size),
   Row >= 0,
@@ -207,11 +216,12 @@ get_position(Board, Row, Col, N):-
   nth0(Col, Row1, N).
 
 %is_empty(+Row,+Col).
+%checks if a cell has no pieces from any of the players.
 is_empty(Row,Col, Board):-
   get_position(Board,Row,Col,0).
 
 %line_of_three(+Board, +Player).
-
+%checks the board for a line of three from the current player.
 line_of_three(Board, Player) :- %horizontal
   member(Row, Board),
   member(Player, Row),
@@ -256,7 +266,7 @@ line_of_three(Board, Player) :- %diagonal (top right to bottom left)
 
 
 %line_win(+Player).
-
+% if a line of three is detected the current player gets the 6 points needed to win the game.
 line_win(Player):-
   board(B),
   line_of_three(B, Player),
@@ -265,21 +275,24 @@ line_win(Player):-
 
 line_win(_).
 
-%move functions
+%move predicates
 
-%place_piece(+C,+Row,+Col)
+%place_piece(+Player,+Row,+Col,+Board).
+% updates the board with the new piece.
 place_piece(Player,Row,Col, Board):-
   valid_place(Player, Row, Col, Board),
   retract(board(_)),
   place(Player, Row, Col, Board, NewBoard),
   assert(board(NewBoard)).
 
+%place(+Player, +Row, +Col, +Board, -NewBoard).
+%creates a new board with the piece in the given coordinates
 place(Player, Row, Col, Board, NewBoard):-
   replace(Board,Player,Row,Col,NewBoard).
 
-
-
-replace(Board, Value, Row, Col, Result):-
+%replace(+Board, +Value, +Row, +Col, -NewBoard).
+%creates a new board with the contents of the cell replaced by value.
+replace(Board, Value, Row, Col, NewBoard):-
   nth0(Row, Board, Row1),
   nth0(Col, Row1, Element),
   append(P1, [Element|T], Row1),
@@ -287,24 +300,24 @@ replace(Board, Value, Row, Col, Result):-
   append(P1, [Value|T], Row2),
   append(P2, [Row1|Tail], Board),
   length(P2, Row),
-  append(P2, [Row2|Tail], Result).
+  append(P2, [Row2|Tail], NewBoard).
   
-
-
-%move_piece(+C,+Row,+Col,+Row2,+Col2)
+%move_piece(+Player,+Row1,+Col1,+Row2,+Col2, +Board).
+%updates the board after the moved piece.
 move_piece(Player,Row1,Col1,Row2,Col2, Board):-
   valid_move(Player, Row1, Col1, Row2, Col2, Board),
   retract(board(_)),
   move(Player, Row1, Col1, Row2, Col2, Board, NewBoard),
   assert(board(NewBoard)).
 
+%move(+Player, +Row1, +Col1, +Row2,+Col2, +Board, -NewBoard).
+% creates a new board with a moved piece.
 move(Player, Row1, Col1, Row2, Col2, Board, NewBoard):-
   replace(Board,0,Row1,Col1,B2),
   replace(B2,Player,Row2,Col2,NewBoard).
 
-
-
-%eat_piece(+Player,+Row,+Col,+Row2,+Col2)
+%eat_piece(+Player,+Row,+Col,+Row2,+Col2, -Row3, -Col3, +Bpard).
+%replaces the board after a successful capture and updates the score.
 eat_piece(Player, Row1,Col1,Row2,Col2, Row3, Col3, Board):-
   valid_eat(Player, Row1, Col1, Row2, Col2, Board),
   retract(board(_)),
@@ -312,6 +325,8 @@ eat_piece(Player, Row1,Col1,Row2,Col2, Row3, Col3, Board):-
   assert(board(NewBoard)),
   add_point(Player).
 
+%eat(+Player, +Row1, +Col1, +Row2, +Col2, -Row3, -Col3 , +Board, -NewBoard).
+%captures a piece.
 eat(Player, Row1, Col1, Row2, Col2, Row3, Col3 , Board, NewBoard):-
   get_landing(Row1, Col1, Row2, Col2, Row3, Col3),
   replace(Board,0,Row1,Col1,B2),
@@ -319,21 +334,28 @@ eat(Player, Row1, Col1, Row2, Col2, Row3, Col3 , Board, NewBoard):-
   replace(B3,Player,Row3,Col3,NewBoard).
 
 %check_eat(+Player).
+%checks if the current player can capture any pieces.
 check_eat(Player):-
   board(Board),
   size(Size),
   Size1 is Size-1,
   findall(X1-Y1/X2-Y2, (between(0, Size1, X1), between(0, Size1, Y1), valid_eat(Player, X1, Y1, X2, Y2, Board)), [_|_]).
 
+%check_seconde_eat(+Player, +Row, +Col, +Board).
+%after a captures, checks if the piece used to capture can capture another one.
 check_second_eat(Player, X1, Y1, Board):-
   findall(X1-Y1/X2-Y2, valid_eat(Player, X1, Y1, X2, Y2, Board), [_|_]).
 
+%multiple_eat(+Player, +Row, +Col, +Board).
+%displays the board after each successful capture, until there are no possible captures available
 multiple_eat(Player, Row, Col, Board):-
   check_second_eat(Player, Row, Col, Board),
   display_game,
   another_eat(Player, Row, Col, Board).
 multiple_eat(_,_,_).
 
+%another_eat(+Player, +Row, +Col, +Board).
+%gets position of the target piece and captures it.
 another_eat(Player, Row1, Col1, Board):-
   format('Piece to eat:~n', []),
   get_coord(Row2, Col2),
@@ -345,19 +367,22 @@ another_eat(Player, Row1, Col1, Board):-
 another_eat(Player, Row, Col, Board):-
   multiple_eat(Player, Row, Col, Board).
 
-%valid_place(+Player, +Row, +Col).
+%valid_place(+Player, +Row, +Col, +Board).
+%checks if a place play is valid.
 valid_place(Player, Row, Col, Board):-
   pieces(Player, Pieces),
   Pieces > 0,
   is_empty(Row, Col, Board).
 
-%valid_move(+Player, +Row, +Col, +DestRow, +DestCol).
+%valid_move(+Player, +Row, +Col, ?DestRow, ?DestCol, +Board).
+%checks if a move play is valid.
 valid_move(Player, Row, Col, DestRow, DestCol, Board):-
   get_position(Board, Row, Col, Player),
   adjacent(Row, Col, DestRow, DestCol),
   is_empty(DestRow, DestCol, Board).
 
-%valid_eat(+Player, +Row, +Col, +DestRow, +DestCol).
+%valid_eat(+Player, +Row, +Col, ?DestRow, ?DestCol, +Board).
+%checks if a capture play is valid.
 valid_eat(Player, Row, Col, DestRow, DestCol, Board):-
   adjacent(Row, Col, DestRow, DestCol),
   get_position(Board, Row, Col, Player),
@@ -366,6 +391,9 @@ valid_eat(Player, Row, Col, DestRow, DestCol, Board):-
   get_landing(Row, Col, DestRow, DestCol, FinalRow, FinalCol),
   is_empty(FinalRow, FinalCol, Board).
 
+
+%get_landing(+Row, +Col, +DestRow, +DestCol, -FinalRow, -FinalCol).
+%gets the coordinates of the cell where a piece will land after a successful capture
 get_landing(Row, Col, DestRow, DestCol, FinalRow, FinalCol):-
   MoveX is DestRow - Row,
   MoveY is DestCol - Col,
@@ -373,7 +401,8 @@ get_landing(Row, Col, DestRow, DestCol, FinalRow, FinalCol):-
   FinalCol is DestCol + MoveY.
 
   
-%adjacent(+Row1, +Col1, +Row2, +Col2).
+%adjacent(+Row1, +Col1, ?Row2, ?Col2).
+%verifies if two cells are adjacent.
 adjacent(Row1, Col1, Row2, Col1) :- 
   Row2 is Row1+1.
 adjacent(Row1, Col1, Row2, Col1) :- 
@@ -395,7 +424,8 @@ adjacent(Row1, Col1, Row2, Col2) :-
   Row2 is Row1-1, 
   Col2 is Col1-1. 
 
-
+%pieces_on_board(+Player, -N, +Board).
+%counts how many pieces a player has on board
 pieces_on_board(Player, N, Board):-
   size(Size),
   Size1 is Size -1,
@@ -403,6 +433,8 @@ pieces_on_board(Player, N, Board):-
   sort(L, L1),
   length(L1, N).
 
+%valid_plays(+Player, +Board, -Plays).
+%gets all possible plays a player could make. (if a capture is available, it is mandatory).
 valid_plays(Player, Board, Plays):-
   size(Size),
   Size1 is Size -1,
@@ -418,7 +450,8 @@ valid_plays(Player, Board, Plays):-
   append(L1, L2, L),
   sort(L, Plays).
 
-
+%winning_moves(+Player, +Board, +play, -Score).
+%checks if a move will result in a win.
 winning_moves(Player, Board, place/X-Y, 5000):-
   place(Player, X, Y, Board, B2),
   line_of_three(B2, Player).
@@ -437,7 +470,8 @@ winning_moves(Player, Board, eat/X1-Y1/X2-Y2, 5000):-
 winning_moves(_, _, _, 0).
 
 
-
+%potential_piece_difference(+Player, +Board, +Play, -Score).
+%checks how big of a piece advantage/disavantage the current player will get after a specific play.
 potential_piece_difference(Player, Board, eat/X1-Y1/X2-Y2, Num):-
   Player2 is Player mod 2 + 1,
   pieces_on_board(Player, N1, Board),
@@ -457,7 +491,8 @@ potential_piece_difference(Player, Board, place/_-_, Num):-
   N3 is N1 + 1,
   Num is N3 - N2.
 
-
+%potential_captures(+Player, +Acc, +Board, +Play, -Score).
+%checks how many pieces a specific play can capture.
 potential_captures(Player, Acc, Board, X1-Y1/X2-Y2, Num):-
   eat(Player, X1, Y1, X2, Y2, X3, Y3, Board, NewBoard),
   check_second_eat(Player,X3, Y3, NewBoard),
@@ -466,7 +501,8 @@ potential_captures(Player, Acc, Board, X1-Y1/X2-Y2, Num):-
   potential_captures(Player, Acc1, NewBoard, X3-Y3/X4-Y4, Num).
 potential_captures(_, Num, _, _, Num).
   
-
+%move_value(+Player, +Play, +Board, -Score).
+%calculates the value of a movePlay.
 move_value(Player, X1-Y1/X2-Y2, Board, Value):-
   Player2 is Player mod 2 +1,
   adjacent(X1, Y1, X3, Y3),
@@ -514,7 +550,8 @@ move_value(Player, _-_/X2-Y2, Board, Value):-
   Value is -2.
 move_value(_, _, _, 0).
 
-
+%place_value(+Player, +Play, +Board, -Score).
+%calculates the value of a place play.
 place_value(Player, X-Y, Board, Value):-
   Player2 is Player mod 2 +1,
   adjacent(X, Y, X1, Y1),
@@ -526,7 +563,8 @@ place_value(Player, X-Y, Board, Value):-
   Value is 2.
 place_value(_, _, _, 0).
 
-
+%play_value(+Player, +Play, +Board, -Score).
+%calculates the score of a specific play.
 play_value(Player, place/X-Y, Board, Value):-
   place_value(Player, X-Y, Board, Value1),
   winning_moves(Player, Board, place/X-Y, Value2),
@@ -545,6 +583,9 @@ play_value(Player, eat/X1-Y1/X2-Y2, Board, Value):-
   potential_piece_difference(Player, Board, eat/X1-Y1/X2-Y2, Value3),
   Value is Value1 + Value2 + Value3.
 
+
+%best_play(+Player, +Plays, +Board, -BestPlay, -BestValue).
+%chooses the best play based on score.
 best_play(Player, [CurrPlay], Board, CurrPlay, BestValue) :- play_value(Player, CurrPlay, Board, BestValue).
 best_play(Player, [CurrPlay|Tail], Board, BestPlay, BestValue):-
   play_value(Player, CurrPlay, Board, Value1),
@@ -552,7 +593,8 @@ best_play(Player, [CurrPlay|Tail], Board, BestPlay, BestValue):-
   BestValue >= Value1.
 best_play(Player, [CurrPlay|_], Board, CurrPlay, BestValue) :- play_value(Player, CurrPlay, Board, BestValue).
 
-  
+%bot_play(+Player, +Board, +Play).
+%processes plays of bot players.
 bot_play(Player, Board, place/X-Y):-
   place_piece(Player, X, Y, Board).
 
