@@ -21,6 +21,9 @@ main_menu :-
   Option < 5,
   (
     Option is 4;
+    Option is 1,
+    clear,
+    main_menu(1);
     clear,
     main_menu(Option),
     fail
@@ -33,7 +36,7 @@ main_menu(3):- get_boardsize.
 %play.
 play:-
   size(Size),
-  initial_state(Size, _),
+  initial_state(Size),
   gamemode(Gamemode),
   clear,
   display_game,
@@ -44,12 +47,6 @@ game(_):-
   congratulate(Winner),
   start.
 
-game(_):-
-  line_win(Winner),
-  congratulate(Winner),
-  start.
-
-
 game(P1/P2):-
   game_state(T,_,_,_),
   Player is T mod 2,
@@ -57,6 +54,7 @@ game(P1/P2):-
   player_turn(1, P1),
   clear,
   display_game,
+  line_win(1),
   game(P1/P2).
 
 game(P1/P2):-
@@ -66,6 +64,7 @@ game(P1/P2):-
   player_turn(2, P2),
   clear,
   display_game,
+  line_win(2),
   game(P1/P2).
   
 

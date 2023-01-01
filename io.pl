@@ -7,7 +7,7 @@ encoding(utf8).
 welcome_message:-
     format('Welcome to Moxie!~nLet\'s play!~n', []).
 
-:- dynamic gamemode/1, size/1, board/1, pieces/2, pos/1.
+:- dynamic gamemode/1, size/1, board/1, pieces/2.
 
 gamemode(h/h).    %default gamemode is human vs human
 size(4).          %default size is 4x4
@@ -21,11 +21,6 @@ board([
 pieces(1, 8).
 pieces(2, 8).
 
-
-pos(0).
-pos(1).
-pos(2).
-pos(3).
 
 %clear.
 clear :- 
@@ -43,13 +38,13 @@ valid_gamemode(P1/P2):-
 % valid_player_type(+Type)
 
 valid_player_type(h).
-valid_player_type(pc-1).
-valid_player_type(pc-2).
+valid_player_type(pc1).
+valid_player_type(pc2).
 
 %get_gamemode.
 
 get_gamemode:-
-    format('What game mode would you like to play?~nWrite it in the form "P1/P2", where either can be h or "pc-[1/2]": ', []),
+    format('What game mode would you like to play?~nWrite it in the form "P1/P2", where either can be h or "pc[1/2]": ', []),
     read_line(Gamemode),
     char_code('/', Bar),
     append(Codes1, [Bar|Codes2], Gamemode),
@@ -82,7 +77,8 @@ error_message:-
 
 congratulate(Winner):-
     format('Player ~d Won!~nCongratulations!!!~n~n Press Enter to return to menu.', [Winner]),
-    read_line(_).
+    read_line(_),
+    !.
 
 
 
