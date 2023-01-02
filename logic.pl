@@ -601,7 +601,7 @@ best_play(Player, [Head|Tail], Board, BestPlay):-
   play_value(Player,Head,Board,Value),
   best_play_aux(Player, Tail, Board, Head,Value,BestPlay).
 
-best_play_aux(_,[],_,BestPlay,_,BestPlay):- print(1).
+best_play_aux(_,[],_,BestPlay,_,BestPlay).
 best_play_aux(Player,[Head|Tail],Board,_,CurrValue,BestPlay):-
   play_value(Player,Head,Board,Value),
   Value > CurrValue,
