@@ -42,9 +42,8 @@ play:-
   display_game,
   game(Gamemode).
 
-%game.
+%game(+Gamemode).
 %main game loop
-
 game(_):-
   game_over(Winner), 
   congratulate(Winner),

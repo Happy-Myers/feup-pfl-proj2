@@ -87,7 +87,7 @@ congratulate(Winner):-
 
 
 
-%% display board
+% display board
 
 % side_chars(?Line, ?[LeftCorner, Mid, Rightcorner]).
 %defines special characters to use on the upper and lower ends of the board

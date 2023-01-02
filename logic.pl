@@ -10,7 +10,7 @@ init_random_state:-
   now(X),
   setrand(X).
 
-%initial_state(+Size, ?Size).
+%initial_state(+Size).
 %initializes all important variables.
 initial_state(Size):-
     Size > 0,
@@ -175,7 +175,7 @@ choose_play(3,Player):- % eat
 choose_play(_,_):-
   format('invalid input~n', []).
 
-%add_point(Player)
+%add_point(+Player)
 %adds points to a player whenever they capture a piece.
 add_point(Player):-
   retract(player_state(Player, Points)),
@@ -183,7 +183,7 @@ add_point(Player):-
   assert(player_state(Player, Points1)).
 
 
-%remove_piece(Player)
+%remove_piece(+Player)
 %subtracts one from the number of available pieces when a player places one on the board.
 remove_piece(Player):-
   retract(pieces(Player, Pieces)),
@@ -216,9 +216,9 @@ get_position(Board, Row, Col, N):-
   nth0(Row, Board, Row1),
   nth0(Col, Row1, N).
 
-%is_empty(+Row,+Col).
+%is_empty(+Row,+Col,+Board).
 %checks if a cell has no pieces from any of the players.
-is_empty(Row,Col, Board):-
+is_empty(Row,Col,Board):-
   get_position(Board,Row,Col,0).
 
 %line_of_three(+Board, +Player).
@@ -317,7 +317,7 @@ move(Player, Row1, Col1, Row2, Col2, Board, NewBoard):-
   replace(Board,0,Row1,Col1,B2),
   replace(B2,Player,Row2,Col2,NewBoard).
 
-%eat_piece(+Player,+Row,+Col,+Row2,+Col2, -Row3, -Col3, +Bpard).
+%eat_piece(+Player,+Row,+Col,+Row2,+Col2, -Row3, -Col3, +Board).
 %replaces the board after a successful capture and updates the score.
 eat_piece(Player, Row1,Col1,Row2,Col2, Row3, Col3, Board):-
   valid_eat(Player, Row1, Col1, Row2, Col2, Board),
@@ -595,7 +595,7 @@ play_value(Player, eat/X1-Y1/X2-Y2, Board, Value):-
   Value is Value1 + Value2 + Value3.
 
 
-%best_play(+Player, +Plays, +Board, -BestPlay, -BestValue).
+%best_play(+Player, +Plays, +Board, -BestPlay).
 %chooses the best play based on score.
 best_play(Player, [Head|Tail], Board, BestPlay):-
   play_value(Player,Head,Board,Value),
@@ -634,6 +634,7 @@ bot_play(_, _, eat/_-_/_-_).
 bot_play(Player, Board, move/X1-Y1/X2-Y2):-
   move_piece(Player, X1, Y1, X2, Y2, Board).
 
+%check_opponent_win(+Player,+Board,+Row,+Col)
 check_opponent_win(Player2, Board, X, Y):-
   replace(Board, Player2, X, Y, Board2),
   line_of_three(Board2,Player2).
