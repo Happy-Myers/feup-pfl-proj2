@@ -569,12 +569,12 @@ place_value(_, _, _, 0).
 play_value(Player, place/X-Y, Board, Value):-
   Player2 is Player mod 2 +1,
   check_opponent_win(Player2, Board, X, Y),
-  Value is 10000000000.
+  Value is 100.
 
 play_value(Player, move/_-_/X2-Y2, Board, Value):-
   Player2 is Player mod 2 +1,
   check_opponent_win(Player2, Board, X2, Y2),
-  Value is 10000000000.
+  Value is 100.
 
 play_value(Player, place/X-Y, Board, Value):-
   place_value(Player, X-Y, Board, Value1),
@@ -597,39 +597,23 @@ play_value(Player, eat/X1-Y1/X2-Y2, Board, Value):-
 
 %best_play(+Player, +Plays, +Board, -BestPlay, -BestValue).
 %chooses the best play based on score.
-/*
-best_play(Player, [CurrPlay], Board, CurrPlay, BestValue) :- play_value(Player, CurrPlay, Board, BestValue), print(1).
-best_play(Player, [CurrPlay|Tail], Board, BestPlay, BestValue):-
-  play_value(Player, CurrPlay, Board, Value1),
-  best_play(Player, Tail, Board, BestPlay, BestValue),
-  BestValue >= Value1.
-best_play(Player, [CurrPlay|_], Board, CurrPlay, BestValue) :- play_value(Player, CurrPlay, Board, BestValue).
-*/
-
 best_play(Player, [Head|Tail], Board, BestPlay):-
   play_value(Player,Head,Board,Value),
   best_play_aux(Player, Tail, Board, Head,Value,BestPlay).
 
 best_play_aux(_,[],_,BestPlay,_,BestPlay):- print(1).
 best_play_aux(Player,[Head|Tail],Board,_,CurrValue,BestPlay):-
-  print(2),
   play_value(Player,Head,Board,Value),
   Value > CurrValue,
   best_play_aux(Player,Tail,Board,Head,Value,BestPlay).
 best_play_aux(Player,[Head|Tail],Board,Play,CurrValue,BestPlay):-
-  print(3),
   play_value(Player,Head,Board,Value),
   Value < CurrValue,
   best_play_aux(Player,Tail,Board,Play,CurrValue,BestPlay).
 best_play_aux(Player,[Head|Tail],Board,Play,CurrValue,BestPlay):-
-  print(4),
   init_random_state,
   random_member(Play2,[Head,Play]),
   best_play_aux(Player,Tail,Board,Play2,CurrValue,BestPlay).
-
-%best_play(1,[place/1-1],[[0,0],[0,0]],BestPlay).
-
-
 
 %bot_play(+Player, +Board, +Play).
 %processes plays of bot players.
