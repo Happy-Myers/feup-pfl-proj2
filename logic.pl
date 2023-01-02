@@ -353,7 +353,7 @@ multiple_eat(Player, Row, Col, Board):-
   check_second_eat(Player, Row, Col, Board),
   display_game,
   another_eat(Player, Row, Col, Board).
-multiple_eat(_,_,_).
+multiple_eat(_,_,_,_).
 
 %another_eat(+Player, +Row, +Col, +Board).
 %gets position of the target piece and captures it.
