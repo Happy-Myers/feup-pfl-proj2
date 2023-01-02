@@ -48,7 +48,8 @@ fill_row(Size, Row) :-
 %game_over(Winner).
 %detects finished game
 game_over(Winner):-
-  player_state(Winner,6).
+  player_state(Winner,Points),
+  Points >= 6.
 
 % player_turn(+Player, +PlayerType).
 % gets the options available to the players and gets input on the kind of play to make.(human)
@@ -101,7 +102,7 @@ player_turn(Player, pc1):-
 player_turn(Player, pc2):-
   board(Board),
   valid_plays(Player, Board, Plays),
-  best_play(Player, Plays, Board, BestPlay, _),
+  best_play(Player, Plays, Board, BestPlay),
   sleep(3),
   retract(turnNum(Num)),
   Num1 is Num +1,
@@ -352,7 +353,7 @@ multiple_eat(Player, Row, Col, Board):-
   check_second_eat(Player, Row, Col, Board),
   display_game,
   another_eat(Player, Row, Col, Board).
-multiple_eat(_,_,_).
+multiple_eat(_,_,_,_).
 
 %another_eat(+Player, +Row, +Col, +Board).
 %gets position of the target piece and captures it.
@@ -433,7 +434,7 @@ pieces_on_board(Player, N, Board):-
   sort(L, L1),
   length(L1, N).
 
-%valid_plays(+Player, +Board, -Plays).
+%valid_plays(+Player, +Board, -Plays). 
 %gets all possible plays a player could make. (if a capture is available, it is mandatory).
 valid_plays(Player, Board, Plays):-
   size(Size),
@@ -566,6 +567,16 @@ place_value(_, _, _, 0).
 %play_value(+Player, +Play, +Board, -Score).
 %calculates the score of a specific play.
 play_value(Player, place/X-Y, Board, Value):-
+  Player2 is Player mod 2 +1,
+  check_opponent_win(Player2, Board, X, Y),
+  Value is 100.
+
+play_value(Player, move/_-_/X2-Y2, Board, Value):-
+  Player2 is Player mod 2 +1,
+  check_opponent_win(Player2, Board, X2, Y2),
+  Value is 100.
+
+play_value(Player, place/X-Y, Board, Value):-
   place_value(Player, X-Y, Board, Value1),
   winning_moves(Player, Board, place/X-Y, Value2),
   potential_piece_difference(Player, Board, place/X-Y, Value3),
@@ -586,12 +597,23 @@ play_value(Player, eat/X1-Y1/X2-Y2, Board, Value):-
 
 %best_play(+Player, +Plays, +Board, -BestPlay, -BestValue).
 %chooses the best play based on score.
-best_play(Player, [CurrPlay], Board, CurrPlay, BestValue) :- play_value(Player, CurrPlay, Board, BestValue).
-best_play(Player, [CurrPlay|Tail], Board, BestPlay, BestValue):-
-  play_value(Player, CurrPlay, Board, Value1),
-  best_play(Player, Tail, Board, BestPlay, BestValue),
-  BestValue >= Value1.
-best_play(Player, [CurrPlay|_], Board, CurrPlay, BestValue) :- play_value(Player, CurrPlay, Board, BestValue).
+best_play(Player, [Head|Tail], Board, BestPlay):-
+  play_value(Player,Head,Board,Value),
+  best_play_aux(Player, Tail, Board, Head,Value,BestPlay).
+
+best_play_aux(_,[],_,BestPlay,_,BestPlay):- print(1).
+best_play_aux(Player,[Head|Tail],Board,_,CurrValue,BestPlay):-
+  play_value(Player,Head,Board,Value),
+  Value > CurrValue,
+  best_play_aux(Player,Tail,Board,Head,Value,BestPlay).
+best_play_aux(Player,[Head|Tail],Board,Play,CurrValue,BestPlay):-
+  play_value(Player,Head,Board,Value),
+  Value < CurrValue,
+  best_play_aux(Player,Tail,Board,Play,CurrValue,BestPlay).
+best_play_aux(Player,[Head|Tail],Board,Play,CurrValue,BestPlay):-
+  init_random_state,
+  random_member(Play2,[Head,Play]),
+  best_play_aux(Player,Tail,Board,Play2,CurrValue,BestPlay).
 
 %bot_play(+Player, +Board, +Play).
 %processes plays of bot players.
@@ -611,3 +633,7 @@ bot_play(_, _, eat/_-_/_-_).
 
 bot_play(Player, Board, move/X1-Y1/X2-Y2):-
   move_piece(Player, X1, Y1, X2, Y2, Board).
+
+check_opponent_win(Player2, Board, X, Y):-
+  replace(Board, Player2, X, Y, Board2),
+  line_of_three(Board2,Player2).
