@@ -102,7 +102,7 @@ display_char(0, ' ').
 display_char(1, 'X').
 display_char(2, 'O').
 
-%display_game(+Gamestate).
+%display_game.
 %displays board with numbered coordinates for x and y axis
 display_game:-
     size(Size),
