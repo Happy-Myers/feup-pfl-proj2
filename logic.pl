@@ -45,7 +45,7 @@ fill_row(Size, Row) :-
   length(Row, Size),
   maplist(=(0), Row).
 
-%game_over(Winner).
+%game_over(+Winner).
 %detects finished game
 game_over(Winner):-
   player_state(Winner,Points),
